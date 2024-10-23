@@ -6618,6 +6618,7 @@ dependencies = [
  "alloy-signer",
  "alloy-signer-local",
  "auto_impl",
+ "core-reth-primitives",
  "derive_more 1.0.0",
  "metrics",
  "parking_lot 0.12.3",

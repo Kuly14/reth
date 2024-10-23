@@ -4,7 +4,7 @@
 ###Hashing
 - [x] blockchain-tree-api
 - [x] blockchain-tree
-- [ ] chain-state
+- [x] chain-state
 - [ ] chainspec
 - [ ] cli
 - [ ] config
@@ -23,7 +23,7 @@
 - [ ] node
 - [ ] optimism
 - [ ] payload
-- [ ] primitives-traits
+- [x] primitives-traits
 - [x] primitives
 - [ ] prune
 - [ ] revm

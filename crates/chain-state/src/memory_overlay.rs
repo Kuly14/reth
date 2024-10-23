@@ -1,6 +1,5 @@
 use super::ExecutedBlock;
 use alloy_primitives::{
-    keccak256,
     map::{HashMap, HashSet},
     Address, BlockNumber, Bytes, StorageKey, StorageValue, B256,
 };
@@ -14,6 +13,9 @@ use reth_trie::{
     updates::TrieUpdates, AccountProof, HashedPostState, HashedStorage, MultiProof, TrieInput,
 };
 use std::sync::OnceLock;
+use core_reth_primitives::sha3;
+
+
 
 /// A state provider that stores references to in-memory blocks along with their state as well as
 /// the historical state provider for fallback lookups.
@@ -135,7 +137,7 @@ impl StorageRootProvider for MemoryOverlayStateProvider {
     fn storage_root(&self, address: Address, storage: HashedStorage) -> ProviderResult<B256> {
         let state = &self.trie_state().state;
         let mut hashed_storage =
-            state.storages.get(&keccak256(address)).cloned().unwrap_or_default();
+            state.storages.get(&sha3(address)).cloned().unwrap_or_default();
         hashed_storage.extend(&storage);
         self.historical.storage_root(address, hashed_storage)
     }
@@ -149,7 +151,7 @@ impl StorageRootProvider for MemoryOverlayStateProvider {
     ) -> ProviderResult<reth_trie::StorageProof> {
         let state = &self.trie_state().state;
         let mut hashed_storage =
-            state.storages.get(&keccak256(address)).cloned().unwrap_or_default();
+            state.storages.get(&sha3(address)).cloned().unwrap_or_default();
         hashed_storage.extend(&storage);
         self.historical.storage_proof(address, slot, hashed_storage)
     }
