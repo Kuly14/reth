@@ -7652,6 +7652,7 @@ dependencies = [
  "alloy-primitives",
  "alloy-rlp",
  "alloy-rpc-types-debug",
+ "core-reth-primitives",
  "eyre",
  "futures",
  "jsonrpsee",

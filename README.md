@@ -5,12 +5,12 @@
 - [x] blockchain-tree-api
 - [x] blockchain-tree
 - [x] chain-state
-- [ ] chainspec
-- [ ] cli
-- [ ] config
-- [ ] consensus
-- [ ] e2e-test-utils
-- [ ] engine
+- [x] chainspec
+- [x] cli
+- [x] config
+- [x] consensus
+- [x] e2e-test-utils
+- [x] engine
 - [ ] errors
 - [ ] ethereum-forks
 - [ ] ethereum
