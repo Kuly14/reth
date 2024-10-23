@@ -1,4 +1,41 @@
 # reth
+## TODO
+
+###Hashing
+- [x] blockchain-tree-api
+- [x] blockchain-tree
+- [ ] chain-state
+- [ ] chainspec
+- [ ] cli
+- [ ] config
+- [ ] consensus
+- [ ] e2e-test-utils
+- [ ] engine
+- [ ] errors
+- [ ] ethereum-forks
+- [ ] ethereum
+- [ ] etl
+- [ ] evm
+- [ ] exex
+- [ ] fs-util
+- [ ] metrics
+- [ ] net
+- [ ] node
+- [ ] optimism
+- [ ] payload
+- [ ] primitives-traits
+- [x] primitives
+- [ ] prune
+- [ ] revm
+- [ ] rpc
+- [ ] stages
+- [ ] static-file
+- [ ] storage
+- [ ] tasks
+- [ ] tokio-util
+- [ ] tracing
+- [ ] transaction-pool
+- [ ] trie
 
 [![CI status](https://github.com/paradigmxyz/reth/workflows/unit/badge.svg)][gh-ci]
 [![cargo-deny status](https://github.com/paradigmxyz/reth/workflows/deny/badge.svg)][gh-deny]
