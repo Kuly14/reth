@@ -27,7 +27,7 @@
 - [x] primitives
 - [x] prune
 - [x] revm
-- [ ] rpc
+- [x] rpc
 - [ ] stages
 - [ ] static-file
 - [ ] storage
@@ -39,6 +39,8 @@
 
 Other Todo:
 in some crates like the node crate are features like keccak-asm, remove
+
+Delete entire keccak-asm feature from the crate
 
 [![CI status](https://github.com/paradigmxyz/reth/workflows/unit/badge.svg)][gh-ci]
 [![cargo-deny status](https://github.com/paradigmxyz/reth/workflows/deny/badge.svg)][gh-deny]

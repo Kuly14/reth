@@ -41,7 +41,10 @@ use revm::{
 use revm_inspectors::tracing::{
     FourByteInspector, MuxInspector, TracingInspector, TracingInspectorConfig, TransactionContext,
 };
-use revm_primitives::{keccak256, HashMap};
+use revm_primitives::HashMap;
+use core_reth_primitives::sha3;
+
+
 use std::sync::Arc;
 use tokio::sync::{AcquireError, OwnedSemaphorePermit};
 
@@ -657,7 +660,7 @@ where
                                 .collect();
 
                             for (address, account) in &statedb.cache.accounts {
-                                let hashed_address = keccak256(address);
+                                let hashed_address = sha3(address);
                                 hashed_state.accounts.insert(
                                     hashed_address,
                                     account.account.as_ref().map(|a| a.info.clone().into()),
@@ -673,7 +676,7 @@ where
 
                                     for (slot, value) in &account.storage {
                                         let slot = B256::from(*slot);
-                                        let hashed_slot = keccak256(slot);
+                                        let hashed_slot = sha3(slot);
                                         storage.storage.insert(hashed_slot, *value);
 
                                         keys.insert(hashed_slot, slot.into());

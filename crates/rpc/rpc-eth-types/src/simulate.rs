@@ -20,7 +20,9 @@ use reth_rpc_types_compat::{block::from_block, TransactionCompat};
 use reth_storage_api::StateRootProvider;
 use reth_trie::{HashedPostState, HashedStorage};
 use revm::{db::CacheDB, Database};
-use revm_primitives::{keccak256, Address, BlockEnv, Bytes, ExecutionResult, TxKind, B256, U256};
+use revm_primitives::{Address, BlockEnv, Bytes, ExecutionResult, TxKind, B256, U256};
+use core_reth_primitives::sha3;
+
 
 use crate::{
     cache::db::StateProviderTraitObjWrapper, error::ToRpcError, EthApiError, RevertError,
@@ -258,7 +260,7 @@ pub fn build_block<T: TransactionCompat>(
 
     let mut hashed_state = HashedPostState::default();
     for (address, account) in &db.accounts {
-        let hashed_address = keccak256(address);
+        let hashed_address = sha3(address);
         hashed_state.accounts.insert(hashed_address, Some(account.info.clone().into()));
 
         let storage = hashed_state
@@ -268,7 +270,7 @@ pub fn build_block<T: TransactionCompat>(
 
         for (slot, value) in &account.storage {
             let slot = B256::from(*slot);
-            let hashed_slot = keccak256(slot);
+            let hashed_slot = sha3(slot);
             storage.storage.insert(hashed_slot, *value);
         }
     }

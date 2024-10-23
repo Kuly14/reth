@@ -1,7 +1,7 @@
 //! Loads a pending block from database. Helper trait for `eth_` block, transaction, call and trace
 //! RPC methods.
 
-use alloy_consensus::constants::KECCAK_EMPTY;
+use core_reth_primitives::constants::SHA3_EMPTY;
 use alloy_primitives::{Address, Bytes, B256, U256};
 use alloy_rpc_types::{serde_helpers::JsonStorageKey, Account, EIP1186AccountProofResponse};
 use futures::Future;
@@ -151,7 +151,7 @@ pub trait EthState: LoadState + SpawnBlocking {
 
             let balance = account.balance;
             let nonce = account.nonce;
-            let code_hash = account.bytecode_hash.unwrap_or(KECCAK_EMPTY);
+            let code_hash = account.bytecode_hash.unwrap_or(SHA3_EMPTY);
 
             // Provide a default `HashedStorage` value in order to
             // get the storage root hash of the current state.

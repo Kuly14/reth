@@ -8656,6 +8656,7 @@ dependencies = [
  "alloy-signer",
  "alloy-signer-local",
  "async-trait",
+ "core-reth-primitives",
  "derive_more 1.0.0",
  "futures",
  "http",
