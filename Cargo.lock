@@ -1948,6 +1948,48 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
+name = "core-reth-primitives"
+version = "0.1.0"
+source = "git+https://github.com/Kuly14/core-reth-primitives.git#ba399b2846b7faa27ad4c912168903ce64866507"
+dependencies = [
+ "alloy-chains",
+ "alloy-consensus",
+ "alloy-dyn-abi",
+ "alloy-eips",
+ "alloy-genesis",
+ "alloy-json-rpc",
+ "alloy-network",
+ "alloy-network-primitives",
+ "alloy-node-bindings",
+ "alloy-primitives",
+ "alloy-provider",
+ "alloy-pubsub",
+ "alloy-rlp",
+ "alloy-rpc-client",
+ "alloy-rpc-types",
+ "alloy-rpc-types-admin",
+ "alloy-rpc-types-anvil",
+ "alloy-rpc-types-beacon",
+ "alloy-rpc-types-debug",
+ "alloy-rpc-types-engine",
+ "alloy-rpc-types-eth",
+ "alloy-rpc-types-mev",
+ "alloy-rpc-types-trace",
+ "alloy-rpc-types-txpool",
+ "alloy-serde",
+ "alloy-signer",
+ "alloy-signer-local",
+ "alloy-sol-types",
+ "alloy-transport",
+ "alloy-transport-http",
+ "alloy-transport-ipc",
+ "alloy-transport-ws",
+ "alloy-trie",
+ "itoa",
+ "tiny-keccak",
+]
+
+[[package]]
 name = "core2"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6525,6 +6567,7 @@ dependencies = [
  "alloy-primitives",
  "aquamarine",
  "assert_matches",
+ "core-reth-primitives",
  "linked_hash_set",
  "metrics",
  "parking_lot 0.12.3",
@@ -8414,6 +8457,7 @@ dependencies = [
  "bincode",
  "bytes",
  "c-kzg",
+ "core-reth-primitives",
  "criterion",
  "derive_more 1.0.0",
  "k256",

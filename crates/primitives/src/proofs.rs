@@ -6,7 +6,8 @@ use crate::{
 use alloc::vec::Vec;
 use alloy_consensus::EMPTY_OMMER_ROOT_HASH;
 use alloy_eips::eip2718::Encodable2718;
-use alloy_primitives::{keccak256, B256};
+use alloy_primitives::B256;
+use core_reth_primitives::sha3;
 use reth_trie_common::root::{ordered_trie_root, ordered_trie_root_with_encoder};
 
 /// Calculate a transaction root.
@@ -47,12 +48,12 @@ pub fn calculate_receipt_root_no_memo(receipts: &[&Receipt]) -> B256 {
 pub fn calculate_ommers_root(ommers: &[Header]) -> B256 {
     // Check if `ommers` list is empty
     if ommers.is_empty() {
-        return EMPTY_OMMER_ROOT_HASH
+        return EMPTY_OMMER_ROOT_HASH;
     }
     // RLP Encode
     let mut ommers_rlp = Vec::new();
     alloy_rlp::encode_list(ommers, &mut ommers_rlp);
-    keccak256(ommers_rlp)
+    sha3(ommers_rlp)
 }
 
 #[cfg(test)]
