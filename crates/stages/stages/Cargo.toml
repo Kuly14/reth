@@ -12,6 +12,9 @@ description = "Staged syncing primitives used in reth."
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 # reth
 reth-chainspec = { workspace = true, optional = true }
 reth-codecs.workspace = true

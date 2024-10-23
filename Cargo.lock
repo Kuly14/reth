@@ -8973,6 +8973,7 @@ dependencies = [
  "alloy-rlp",
  "assert_matches",
  "bincode",
+ "core-reth-primitives",
  "criterion",
  "futures-util",
  "itertools 0.13.0",

@@ -104,7 +104,7 @@ impl MerkleStage {
             provider.get_stage_checkpoint_progress(StageId::MerkleExecute)?.unwrap_or_default();
 
         if buf.is_empty() {
-            return Ok(None)
+            return Ok(None);
         }
 
         let (checkpoint, _) = MerkleCheckpoint::from_compact(&buf, buf.len());
@@ -154,7 +154,7 @@ where
         let threshold = match self {
             Self::Unwind => {
                 info!(target: "sync::stages::merkle::unwind", "Stage is always skipped");
-                return Ok(ExecOutput::done(StageCheckpoint::new(input.target())))
+                return Ok(ExecOutput::done(StageCheckpoint::new(input.target())));
             }
             Self::Execution { clean_threshold } => *clean_threshold,
             #[cfg(any(test, feature = "test-utils"))]
@@ -205,8 +205,8 @@ where
             }
             .unwrap_or(EntitiesCheckpoint {
                 processed: 0,
-                total: (provider.count_entries::<tables::HashedAccounts>()? +
-                    provider.count_entries::<tables::HashedStorages>()?)
+                total: (provider.count_entries::<tables::HashedAccounts>()?
+                    + provider.count_entries::<tables::HashedStorages>()?)
                     as u64,
             });
 
@@ -237,7 +237,7 @@ where
                             .checkpoint()
                             .with_entities_stage_checkpoint(entities_checkpoint),
                         done: false,
-                    })
+                    });
                 }
                 StateRootProgress::Complete(root, hashed_entries_walked, updates) => {
                     provider.write_trie_updates(&updates)?;
@@ -258,8 +258,8 @@ where
 
             provider.write_trie_updates(&updates)?;
 
-            let total_hashed_entries = (provider.count_entries::<tables::HashedAccounts>()? +
-                provider.count_entries::<tables::HashedStorages>()?)
+            let total_hashed_entries = (provider.count_entries::<tables::HashedAccounts>()?
+                + provider.count_entries::<tables::HashedStorages>()?)
                 as u64;
 
             let entities_checkpoint = EntitiesCheckpoint {
@@ -298,14 +298,14 @@ where
         let range = input.unwind_block_range();
         if matches!(self, Self::Execution { .. }) {
             info!(target: "sync::stages::merkle::unwind", "Stage is always skipped");
-            return Ok(UnwindOutput { checkpoint: StageCheckpoint::new(input.unwind_to) })
+            return Ok(UnwindOutput { checkpoint: StageCheckpoint::new(input.unwind_to) });
         }
 
         let mut entities_checkpoint =
             input.checkpoint.entities_stage_checkpoint().unwrap_or(EntitiesCheckpoint {
                 processed: 0,
-                total: (tx.entries::<tables::HashedAccounts>()? +
-                    tx.entries::<tables::HashedStorages>()?) as u64,
+                total: (tx.entries::<tables::HashedAccounts>()?
+                    + tx.entries::<tables::HashedStorages>()?) as u64,
             });
 
         if input.unwind_to == 0 {
@@ -317,7 +317,7 @@ where
             return Ok(UnwindOutput {
                 checkpoint: StageCheckpoint::new(input.unwind_to)
                     .with_entities_stage_checkpoint(entities_checkpoint),
-            })
+            });
         }
 
         // Unwind trie only if there are transitions
@@ -374,8 +374,9 @@ mod tests {
         stage_test_suite_ext, ExecuteStageTestRunner, StageTestRunner, StorageKind,
         TestRunnerError, TestStageDB, UnwindStageTestRunner,
     };
-    use alloy_primitives::{keccak256, U256};
+    use alloy_primitives::U256;
     use assert_matches::assert_matches;
+    use core_reth_primitives::sha3;
     use reth_db_api::cursor::{DbCursorRO, DbCursorRW, DbDupCursorRO};
     use reth_primitives::{SealedBlock, StaticFileSegment, StorageEntry};
     use reth_provider::{providers::StaticFileWriter, StaticFileProviderFactory};
@@ -636,12 +637,12 @@ mod tests {
                         rev_changeset_walker.next().transpose().unwrap()
                     {
                         if bn_address.block_number() < target_block {
-                            break
+                            break;
                         }
 
-                        tree.entry(keccak256(bn_address.address()))
+                        tree.entry(sha3(bn_address.address()))
                             .or_default()
-                            .insert(keccak256(entry.key), entry.value);
+                            .insert(sha3(entry.key), entry.value);
                     }
                     for (hashed_address, storage) in tree {
                         for (hashed_slot, value) in storage {
@@ -667,18 +668,15 @@ mod tests {
                         rev_changeset_walker.next().transpose().unwrap()
                     {
                         if block_number < target_block {
-                            break
+                            break;
                         }
 
                         if let Some(acc) = account_before_tx.info {
-                            tx.put::<tables::HashedAccounts>(
-                                keccak256(account_before_tx.address),
-                                acc,
-                            )
-                            .unwrap();
+                            tx.put::<tables::HashedAccounts>(sha3(account_before_tx.address), acc)
+                                .unwrap();
                         } else {
                             tx.delete::<tables::HashedAccounts>(
-                                keccak256(account_before_tx.address),
+                                sha3(account_before_tx.address),
                                 None,
                             )
                             .unwrap();

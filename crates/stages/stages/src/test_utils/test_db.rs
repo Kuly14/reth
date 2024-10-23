@@ -1,4 +1,5 @@
-use alloy_primitives::{keccak256, Address, BlockNumber, TxHash, TxNumber, B256, U256};
+use alloy_primitives::{Address, BlockNumber, TxHash, TxNumber, B256, U256};
+use core_reth_primitives::sha3;
 use reth_chainspec::MAINNET;
 use reth_db::{
     tables,
@@ -277,8 +278,8 @@ impl TestStageDB {
                     // Backfill: some tests start at a forward block number, but static files
                     // require no gaps.
                     let segment_header = txs_writer.user_header();
-                    if segment_header.block_end().is_none() &&
-                        segment_header.expected_block_start() == 0
+                    if segment_header.block_end().is_none()
+                        && segment_header.expected_block_start() == 0
                     {
                         for block in 0..block.number {
                             txs_writer.increment_block(block)?;
@@ -378,7 +379,7 @@ impl TestStageDB {
     {
         self.commit(|tx| {
             accounts.into_iter().try_for_each(|(address, (account, storage))| {
-                let hashed_address = keccak256(address);
+                let hashed_address = sha3(address);
 
                 // Insert into account tables.
                 tx.put::<tables::PlainAccountState>(address, account)?;
@@ -386,7 +387,7 @@ impl TestStageDB {
 
                 // Insert into storage tables.
                 storage.into_iter().filter(|e| !e.value.is_zero()).try_for_each(|entry| {
-                    let hashed_entry = StorageEntry { key: keccak256(entry.key), ..entry };
+                    let hashed_entry = StorageEntry { key: sha3(entry.key), ..entry };
 
                     let mut cursor = tx.cursor_dup_write::<tables::PlainStorageState>()?;
                     if cursor
@@ -489,7 +490,7 @@ impl StorageKind {
 
     fn tx_offset(&self) -> u64 {
         if let Self::Database(offset) = self {
-            return offset.unwrap_or_default()
+            return offset.unwrap_or_default();
         }
         0
     }
