@@ -4,7 +4,7 @@
 //! construction, as specified in the Ethereum `RLPx` protocol.
 //!
 //! The Ethereum MAC is a nonstandard MAC construction that utilizes AES-256 (as a block cipher)
-//! and Keccak-256. It is specifically designed for messages of 128 bits in length and is not
+//! and sha3-256. It is specifically designed for messages of 128 bits in length and is not
 //! intended for general MAC use.
 //!
 //! For more information, refer to the [Ethereum MAC specification](https://github.com/ethereum/devp2p/blob/master/rlpx.md#mac).
@@ -15,7 +15,7 @@ use block_padding::NoPadding;
 use cipher::BlockEncrypt;
 use digest::KeyInit;
 use generic_array::GenericArray;
-use sha3::{Digest, Keccak256};
+use sha3::{Digest, Sha3_256};
 use typenum::U16;
 
 /// Type alias for a fixed-size array of 16 bytes used as headers.
@@ -30,21 +30,21 @@ pub type HeaderBytes = GenericArray<u8, U16>;
 /// The ethereum MAC is a cursed MAC construction.
 ///
 /// The ethereum MAC is a nonstandard MAC construction that uses AES-256 (without a mode, as a
-/// block cipher) and Keccak-256. However, it only ever encrypts messages that are 128 bits long,
+/// block cipher) and sha3-256. However, it only ever encrypts messages that are 128 bits long,
 /// and is not defined as a general MAC.
 #[derive(Debug)]
 pub struct MAC {
     secret: B256,
-    hasher: Keccak256,
+    hasher: Sha3_256,
 }
 
 impl MAC {
     /// Initialize the MAC with the given secret
     pub fn new(secret: B256) -> Self {
-        Self { secret, hasher: Keccak256::new() }
+        Self { secret, hasher: Sha3_256::new() }
     }
 
-    /// Update the internal keccak256 hasher with the given data
+    /// Update the internal sha3 hasher with the given data
     pub fn update(&mut self, data: &[u8]) {
         self.hasher.update(data)
     }
@@ -75,7 +75,7 @@ impl MAC {
         self.hasher.update(encrypted);
     }
 
-    /// Produce a digest by finalizing the internal keccak256 hasher and returning the first 128
+    /// Produce a digest by finalizing the internal sha3 hasher and returning the first 128
     /// bits.
     pub fn digest(&self) -> B128 {
         B128::from_slice(&self.hasher.clone().finalize()[..16])

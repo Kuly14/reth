@@ -22,7 +22,7 @@ use secp256k1::{
     PublicKey, SecretKey, SECP256K1,
 };
 use sha2::Sha256;
-use sha3::Keccak256;
+use sha3::Sha3_256;
 
 const PROTOCOL_VERSION: usize = 4;
 
@@ -582,7 +582,7 @@ impl ECIES {
     }
 
     fn setup_frame(&mut self, incoming: bool) {
-        let mut hasher = Keccak256::new();
+        let mut hasher = Sha3_256::new();
         for el in &if incoming {
             [self.nonce, self.remote_nonce.unwrap()]
         } else {
@@ -594,14 +594,14 @@ impl ECIES {
 
         let iv = B128::default();
         let shared_secret: B256 = {
-            let mut hasher = Keccak256::new();
+            let mut hasher = Sha3_256::new();
             hasher.update(self.ephemeral_shared_secret.unwrap().0.as_ref());
             hasher.update(h_nonce.0.as_ref());
             B256::from(hasher.finalize().as_ref())
         };
 
         let aes_secret: B256 = {
-            let mut hasher = Keccak256::new();
+            let mut hasher = Sha3_256::new();
             hasher.update(self.ephemeral_shared_secret.unwrap().0.as_ref());
             hasher.update(shared_secret.0.as_ref());
             B256::from(hasher.finalize().as_ref())
@@ -610,7 +610,7 @@ impl ECIES {
         self.egress_aes = Some(Ctr64BE::<Aes256>::new((&aes_secret.0).into(), (&iv.0).into()));
 
         let mac_secret: B256 = {
-            let mut hasher = Keccak256::new();
+            let mut hasher = Sha3_256::new();
             hasher.update(self.ephemeral_shared_secret.unwrap().0.as_ref());
             hasher.update(aes_secret.0.as_ref());
             B256::from(hasher.finalize().as_ref())
