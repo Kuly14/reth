@@ -11,9 +11,9 @@
 - [x] consensus
 - [x] e2e-test-utils
 - [x] engine
-- [ ] errors
-- [ ] ethereum-forks
-- [ ] ethereum
+- [x] errors
+- [x] ethereum-forks
+- [x] ethereum
 - [ ] etl
 - [ ] evm
 - [ ] exex

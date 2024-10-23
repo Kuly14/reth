@@ -308,7 +308,8 @@ mod tests {
         eip7002::{WITHDRAWAL_REQUEST_PREDEPLOY_ADDRESS, WITHDRAWAL_REQUEST_PREDEPLOY_CODE},
         eip7685::EMPTY_REQUESTS_HASH,
     };
-    use alloy_primitives::{b256, fixed_bytes, keccak256, Bytes, TxKind, B256};
+    use core_reth_primitives::sha3;
+    use alloy_primitives::{b256, fixed_bytes, Bytes, TxKind, B256};
     use reth_chainspec::{ChainSpecBuilder, ForkCondition};
     use reth_evm::execute::{
         BasicBlockExecutorProvider, BatchExecutor, BlockExecutorProvider, Executor,
@@ -330,7 +331,7 @@ mod tests {
 
         let beacon_root_contract_account = Account {
             balance: U256::ZERO,
-            bytecode_hash: Some(keccak256(BEACON_ROOTS_CODE.clone())),
+            bytecode_hash: Some(sha3(BEACON_ROOTS_CODE.clone())),
             nonce: 1,
         };
 
@@ -350,7 +351,7 @@ mod tests {
         let withdrawal_requests_contract_account = Account {
             nonce: 1,
             balance: U256::ZERO,
-            bytecode_hash: Some(keccak256(WITHDRAWAL_REQUEST_PREDEPLOY_CODE.clone())),
+            bytecode_hash: Some(sha3(WITHDRAWAL_REQUEST_PREDEPLOY_CODE.clone())),
         };
 
         db.insert_account(
@@ -707,12 +708,12 @@ mod tests {
     fn create_state_provider_with_block_hashes(latest_block: u64) -> StateProviderTest {
         let mut db = StateProviderTest::default();
         for block_number in 0..=latest_block {
-            db.insert_block_hash(block_number, keccak256(block_number.to_string()));
+            db.insert_block_hash(block_number, sha3(block_number.to_string()));
         }
 
         let blockhashes_contract_account = Account {
             balance: U256::ZERO,
-            bytecode_hash: Some(keccak256(HISTORY_STORAGE_CODE.clone())),
+            bytecode_hash: Some(sha3(HISTORY_STORAGE_CODE.clone())),
             nonce: 1,
         };
 
