@@ -28,8 +28,8 @@
 - [x] prune
 - [x] revm
 - [x] rpc
-- [ ] stages
-- [ ] static-file
+- [x] stages
+- [x] static-file
 - [ ] storage
 - [ ] tasks
 - [ ] tokio-util

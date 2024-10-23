@@ -99,7 +99,7 @@ impl<'a, ProviderDB, ProviderSF> UnifiedStorageWriter<'a, ProviderDB, ProviderSF
     #[allow(unused)]
     const fn ensure_static_file(&self) -> Result<(), UnifiedStorageWriterError> {
         if self.static_file.is_none() {
-            return Err(UnifiedStorageWriterError::MissingStaticFileWriter)
+            return Err(UnifiedStorageWriterError::MissingStaticFileWriter);
         }
         Ok(())
     }
@@ -163,7 +163,7 @@ where
     pub fn save_blocks(&self, blocks: &[ExecutedBlock]) -> ProviderResult<()> {
         if blocks.is_empty() {
             debug!(target: "provider::storage_writer", "Attempted to write empty block range");
-            return Ok(())
+            return Ok(());
         }
 
         // NOTE: checked non-empty above
@@ -458,8 +458,8 @@ where
         // * If we are in live sync. In this case, `UnifiedStorageWriter` is built without a static
         //   file writer.
         // * If there is any kind of receipt pruning
-        let mut storage_type = if self.static_file.is_none() ||
-            self.database().prune_modes_ref().has_receipts_pruning()
+        let mut storage_type = if self.static_file.is_none()
+            || self.database().prune_modes_ref().has_receipts_pruning()
         {
             StorageType::Database(self.database().tx_ref().cursor_write::<tables::Receipts>()?)
         } else {
@@ -544,7 +544,8 @@ mod tests {
     use crate::{
         test_utils::create_test_provider_factory, AccountReader, StorageTrieWriter, TrieWriter,
     };
-    use alloy_primitives::{keccak256, map::HashMap, Address, B256, U256};
+    use alloy_primitives::{map::HashMap, Address, B256, U256};
+    use core_reth_primitives::sha3;
     use reth_db::tables;
     use reth_db_api::{
         cursor::{DbCursorRO, DbCursorRW, DbDupCursorRO},
@@ -578,9 +579,9 @@ mod tests {
 
         let addresses = (0..10).map(|_| Address::random()).collect::<Vec<_>>();
         let destroyed_address = *addresses.first().unwrap();
-        let destroyed_address_hashed = keccak256(destroyed_address);
+        let destroyed_address_hashed = sha3(destroyed_address);
         let slot = B256::with_last_byte(1);
-        let hashed_slot = keccak256(slot);
+        let hashed_slot = sha3(slot);
         {
             let provider_rw = provider_factory.provider_rw().unwrap();
             let mut accounts_cursor =
@@ -589,7 +590,7 @@ mod tests {
                 provider_rw.tx_ref().cursor_write::<tables::HashedStorages>().unwrap();
 
             for address in addresses {
-                let hashed_address = keccak256(address);
+                let hashed_address = sha3(address);
                 accounts_cursor
                     .insert(hashed_address, Account { nonce: 1, ..Default::default() })
                     .unwrap();
@@ -1421,12 +1422,12 @@ mod tests {
         // insert initial state to the database
         let tx = provider_rw.tx_ref();
         for (address, (account, storage)) in &prestate {
-            let hashed_address = keccak256(address);
+            let hashed_address = sha3(address);
             tx.put::<tables::HashedAccounts>(hashed_address, *account).unwrap();
             for (slot, value) in storage {
                 tx.put::<tables::HashedStorages>(
                     hashed_address,
-                    StorageEntry { key: keccak256(slot), value: *value },
+                    StorageEntry { key: sha3(slot), value: *value },
                 )
                 .unwrap();
             }
@@ -1615,7 +1616,7 @@ mod tests {
     #[test]
     fn hashed_state_storage_root() {
         let address = Address::random();
-        let hashed_address = keccak256(address);
+        let hashed_address = sha3(address);
         let provider_factory = create_test_provider_factory();
         let provider_rw = provider_factory.provider_rw().unwrap();
         let tx = provider_rw.tx_ref();
