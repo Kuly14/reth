@@ -14,19 +14,19 @@
 - [x] errors
 - [x] ethereum-forks
 - [x] ethereum
-- [ ] etl
-- [ ] evm
-- [ ] exex
-- [ ] fs-util
-- [ ] metrics
-- [ ] net
-- [ ] node
-- [ ] optimism
-- [ ] payload
+- [x] etl
+- [x] evm
+- [x] exex
+- [x] fs-util
+- [x] metrics
+- [x] net
+- [x] node
+- [x] optimism
+- [x] payload
 - [x] primitives-traits
 - [x] primitives
-- [ ] prune
-- [ ] revm
+- [x] prune
+- [x] revm
 - [ ] rpc
 - [ ] stages
 - [ ] static-file
@@ -36,6 +36,9 @@
 - [ ] tracing
 - [ ] transaction-pool
 - [ ] trie
+
+Other Todo:
+in some crates like the node crate are features like keccak-asm, remove
 
 [![CI status](https://github.com/paradigmxyz/reth/workflows/unit/badge.svg)][gh-ci]
 [![cargo-deny status](https://github.com/paradigmxyz/reth/workflows/deny/badge.svg)][gh-deny]

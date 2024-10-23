@@ -12,6 +12,9 @@ description = "reth specific revm utilities"
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 # reth
 reth-primitives.workspace = true
 reth-storage-errors.workspace = true
