@@ -11,6 +11,9 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 # reth
 reth-blockchain-tree-api.workspace = true
 reth-primitives.workspace = true

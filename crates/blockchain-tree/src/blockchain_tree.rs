@@ -1376,7 +1376,8 @@ mod tests {
     use super::*;
     use alloy_consensus::{TxEip1559, EMPTY_ROOT_HASH};
     use alloy_genesis::{Genesis, GenesisAccount};
-    use alloy_primitives::{keccak256, Address, Sealable, B256};
+    use alloy_primitives::{Address, Sealable, B256};
+    use core_reth_primitives::sha3;
     use assert_matches::assert_matches;
     use linked_hash_set::LinkedHashSet;
     use reth_chainspec::{ChainSpecBuilder, MAINNET, MIN_TRANSACTION_GAS};
@@ -1556,7 +1557,7 @@ mod tests {
                 .unwrap();
             let account = Account { balance: initial_signer_balance, ..Default::default() };
             provider_rw.tx_ref().put::<tables::PlainAccountState>(signer, account).unwrap();
-            provider_rw.tx_ref().put::<tables::HashedAccounts>(keccak256(signer), account).unwrap();
+            provider_rw.tx_ref().put::<tables::HashedAccounts>(sha3(signer), account).unwrap();
             provider_rw.commit().unwrap();
         }
 
