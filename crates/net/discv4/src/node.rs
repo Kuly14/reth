@@ -1,4 +1,4 @@
-use alloy_primitives::keccak256;
+use core_reth_primitives::sha3;
 use generic_array::GenericArray;
 use reth_network_peers::{NodeRecord, PeerId};
 
@@ -14,7 +14,7 @@ impl From<PeerId> for NodeKey {
 
 impl From<NodeKey> for discv5::Key<NodeKey> {
     fn from(value: NodeKey) -> Self {
-        let hash = keccak256(value.0.as_slice());
+        let hash = sha3(value.0.as_slice());
         let hash = *GenericArray::from_slice(hash.as_slice());
         Self::new_raw(value, hash)
     }

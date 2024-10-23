@@ -3,8 +3,10 @@
 use crate::{error::DecodePacketError, MAX_PACKET_SIZE, MIN_PACKET_SIZE};
 use alloy_primitives::{
     bytes::{Buf, BufMut, Bytes, BytesMut},
-    keccak256, B256,
+    B256,
 };
+use core_reth_primitives::sha3;
+
 use alloy_rlp::{
     Decodable, Encodable, Error as RlpError, Header, RlpDecodable, RlpEncodable,
     RlpEncodableWrapper,
@@ -115,7 +117,7 @@ impl Message {
 
         // Sign the payload with the secret key using recoverable ECDSA
         let signature: RecoverableSignature = SECP256K1.sign_ecdsa_recoverable(
-            &secp256k1::Message::from_digest(keccak256(&payload).0),
+            &secp256k1::Message::from_digest(sha3(&payload).0),
             secret_key,
         );
 
@@ -126,7 +128,7 @@ impl Message {
         sig_bytes.unsplit(payload);
 
         // Calculate the hash of the signature bytes and append it to the datagram
-        let hash = keccak256(&sig_bytes);
+        let hash = sha3(&sig_bytes);
         datagram.extend_from_slice(hash.as_slice());
 
         // Append the signature bytes to the datagram
@@ -146,10 +148,10 @@ impl Message {
 
         // parses the wire-protocol, every packet starts with a header:
         // packet-header = hash || signature || packet-type
-        // hash = keccak256(signature || packet-type || packet-data)
+        // hash = sha3(signature || packet-type || packet-data)
         // signature = sign(packet-type || packet-data)
 
-        let header_hash = keccak256(&packet[32..]);
+        let header_hash = sha3(&packet[32..]);
         let data_hash = B256::from_slice(&packet[..32]);
         if data_hash != header_hash {
             return Err(DecodePacketError::HashMismatch)
@@ -160,7 +162,7 @@ impl Message {
         let recoverable_sig = RecoverableSignature::from_compact(signature, recovery_id)?;
 
         // recover the public key
-        let msg = secp256k1::Message::from_digest(keccak256(&packet[97..]).0);
+        let msg = secp256k1::Message::from_digest(sha3(&packet[97..]).0);
 
         let pk = SECP256K1.recover_ecdsa(&msg, &recoverable_sig)?;
         let node_id = pk2id(&pk);

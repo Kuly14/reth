@@ -12,6 +12,9 @@ description = "Ethereum network discovery"
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 # reth
 reth-net-banlist.workspace = true
 reth-ethereum-forks.workspace = true
