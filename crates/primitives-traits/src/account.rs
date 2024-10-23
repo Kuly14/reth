@@ -1,6 +1,7 @@
 use alloy_consensus::constants::KECCAK_EMPTY;
 use alloy_genesis::GenesisAccount;
-use alloy_primitives::{keccak256, Bytes, B256, U256};
+use alloy_primitives::{Bytes, B256, U256};
+use core_reth_primitives::sha3;
 use byteorder::{BigEndian, ReadBytesExt};
 use bytes::Buf;
 use derive_more::Deref;
@@ -157,7 +158,7 @@ impl From<&GenesisAccount> for Account {
         Self {
             nonce: value.nonce.unwrap_or_default(),
             balance: value.balance,
-            bytecode_hash: value.code.as_ref().map(keccak256),
+            bytecode_hash: value.code.as_ref().map(sha3),
         }
     }
 }

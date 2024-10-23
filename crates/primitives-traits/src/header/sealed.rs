@@ -1,6 +1,7 @@
 use super::Header;
 use alloy_eips::BlockNumHash;
-use alloy_primitives::{keccak256, BlockHash, Sealable};
+use alloy_primitives::{BlockHash, Sealable};
+use core_reth_primitives::sha3;
 #[cfg(any(test, feature = "test-utils"))]
 use alloy_primitives::{BlockNumber, B256, U256};
 use alloy_rlp::{Decodable, Encodable};
@@ -90,7 +91,7 @@ impl Decodable for SealedHeader {
 
         // hash the consumed bytes, the rlp encoded header
         let consumed = started_len - b.len();
-        let hash = keccak256(&buf[..consumed]);
+        let hash = sha3(&buf[..consumed]);
 
         // update original buffer
         *buf = *b;

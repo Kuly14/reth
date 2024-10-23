@@ -8500,6 +8500,7 @@ dependencies = [
  "bincode",
  "byteorder",
  "bytes",
+ "core-reth-primitives",
  "derive_more 1.0.0",
  "modular-bitfield",
  "proptest",
