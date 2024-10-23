@@ -12,6 +12,9 @@ description = "Reth RPC 'eth' namespace API"
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 # reth
 revm.workspace = true
 revm-inspectors.workspace = true
