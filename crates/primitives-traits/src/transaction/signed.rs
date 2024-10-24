@@ -5,7 +5,8 @@ use core::hash::Hash;
 
 use alloy_consensus::Transaction;
 use alloy_eips::eip2718::{Decodable2718, Encodable2718};
-use alloy_primitives::{keccak256, Address, TxHash, B256};
+use alloy_primitives::{Address, TxHash, B256};
+use core_reth_primitives::sha3;
 
 /// A signed transaction.
 pub trait SignedTransaction:
@@ -67,6 +68,6 @@ pub trait SignedTransaction:
     /// Calculate transaction hash, eip2728 transaction does not contain rlp header and start with
     /// tx type.
     fn recalculate_hash(&self) -> B256 {
-        keccak256(self.encoded_2718())
+        sha3(self.encoded_2718())
     }
 }

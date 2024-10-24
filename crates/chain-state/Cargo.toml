@@ -12,6 +12,9 @@ description = "Reth state related types and functionality."
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 # reth
 reth-chainspec.workspace = true
 reth-errors.workspace = true

@@ -100,7 +100,7 @@ where
                                 tracing::error!( %err, "backfill sync failed");
                                 Poll::Ready(ChainEvent::FatalError)
                             }
-                        }
+                        };
                     }
                     BackfillEvent::TaskDropped(err) => {
                         tracing::error!( %err, "backfill sync task dropped");
@@ -117,7 +117,7 @@ where
                         HandlerEvent::BackfillAction(action) => {
                             // forward action to backfill_sync
                             this.backfill_sync.on_action(action);
-                            continue 'outer
+                            continue 'outer;
                         }
                         HandlerEvent::Event(ev) => {
                             // bubble up the event
@@ -125,13 +125,13 @@ where
                         }
                         HandlerEvent::FatalError => {
                             error!(target: "engine::tree", "Fatal error");
-                            return Poll::Ready(ChainEvent::FatalError)
+                            return Poll::Ready(ChainEvent::FatalError);
                         }
                     }
                 }
                 Poll::Pending => {
                     // no more events to process
-                    break 'outer
+                    break 'outer;
                 }
             }
         }

@@ -34,7 +34,7 @@ pub(crate) fn decode_with_eip155_chain_id(
     //
     // NOTE: this is very hacky and only relevant for op-mainnet pre bedrock
     if matches!(v, Parity::Parity(false)) && r.is_zero() && s.is_zero() {
-        return Ok((Signature::new(r, s, Parity::Parity(false)), None))
+        return Ok((Signature::new(r, s, Parity::Parity(false)), None));
     }
 
     Ok((Signature::new(r, s, v), v.chain_id()))
@@ -65,7 +65,7 @@ pub fn recover_signer_unchecked(signature: &Signature, hash: B256) -> Option<Add
 /// If the S value is too large, then this will return `None`
 pub fn recover_signer(signature: &Signature, hash: B256) -> Option<Address> {
     if signature.s() > SECP256K1N_HALF {
-        return None
+        return None;
     }
 
     recover_signer_unchecked(signature, hash)
@@ -83,7 +83,7 @@ pub fn legacy_parity(signature: &Signature, chain_id: Option<u64>) -> Parity {
         //
         // NOTE: this is very hacky and only relevant for op-mainnet pre bedrock
         if *signature == optimism_deposit_tx_signature() {
-            return Parity::Parity(false)
+            return Parity::Parity(false);
         }
         Parity::NonEip155(signature.v().y_parity())
     }
@@ -101,7 +101,7 @@ pub const fn extract_chain_id(v: u64) -> alloy_rlp::Result<(bool, Option<u64>)> 
     if v < 35 {
         // non-EIP-155 legacy scheme, v = 27 for even y-parity, v = 28 for odd y-parity
         if v != 27 && v != 28 {
-            return Err(RlpError::Custom("invalid Ethereum signature (V is not 27 or 28)"))
+            return Err(RlpError::Custom("invalid Ethereum signature (V is not 27 or 28)"));
         }
         Ok((v == 28, None))
     } else {

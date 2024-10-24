@@ -7,6 +7,7 @@ use alloy_rpc_types::{
     Block, BlockTransactionsKind,
 };
 use alloy_rpc_types_eth::transaction::TransactionRequest;
+use core_reth_primitives::sha3;
 use jsonrpsee_types::ErrorObject;
 use reth_primitives::{
     logs_bloom,
@@ -20,7 +21,7 @@ use reth_rpc_types_compat::{block::from_block, TransactionCompat};
 use reth_storage_api::StateRootProvider;
 use reth_trie::{HashedPostState, HashedStorage};
 use revm::{db::CacheDB, Database};
-use revm_primitives::{keccak256, Address, BlockEnv, Bytes, ExecutionResult, TxKind, B256, U256};
+use revm_primitives::{Address, BlockEnv, Bytes, ExecutionResult, TxKind, B256, U256};
 
 use crate::{
     cache::db::StateProviderTraitObjWrapper, error::ToRpcError, EthApiError, RevertError,
@@ -75,7 +76,7 @@ where
         let txs_without_gas_limit = txs.iter().filter(|tx| tx.gas.is_none()).count();
 
         if total_specified_gas > block_gas_limit {
-            return Err(EthApiError::Other(Box::new(EthSimulateError::BlockGasLimitExceeded)))
+            return Err(EthApiError::Other(Box::new(EthSimulateError::BlockGasLimitExceeded)));
         }
 
         if txs_without_gas_limit > 0 {
@@ -131,7 +132,7 @@ where
         }
 
         let Ok(tx) = tx.clone().build_typed_tx() else {
-            return Err(EthApiError::TransactionConversionError)
+            return Err(EthApiError::TransactionConversionError);
         };
 
         // Create an empty signature for the transaction.
@@ -258,7 +259,7 @@ pub fn build_block<T: TransactionCompat>(
 
     let mut hashed_state = HashedPostState::default();
     for (address, account) in &db.accounts {
-        let hashed_address = keccak256(address);
+        let hashed_address = sha3(address);
         hashed_state.accounts.insert(hashed_address, Some(account.info.clone().into()));
 
         let storage = hashed_state
@@ -268,7 +269,7 @@ pub fn build_block<T: TransactionCompat>(
 
         for (slot, value) in &account.storage {
             let slot = B256::from(*slot);
-            let hashed_slot = keccak256(slot);
+            let hashed_slot = sha3(slot);
             storage.storage.insert(hashed_slot, *value);
         }
     }

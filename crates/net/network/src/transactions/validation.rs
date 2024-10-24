@@ -81,7 +81,7 @@ pub trait PartiallyFilterMessage {
                 msg=?msg,
                 "empty payload"
             );
-            return (FilterOutcome::ReportPeer, PartiallyValidData::empty_eth66())
+            return (FilterOutcome::ReportPeer, PartiallyValidData::empty_eth66());
         }
 
         // 2. checks if announcement is spam packed with duplicate hashes
@@ -180,7 +180,7 @@ impl ValidateTx68 for EthMessageFilter {
                     "invalid tx type in eth68 announcement"
                 );
 
-                return ValidationOutcome::ReportPeer
+                return ValidationOutcome::ReportPeer;
             }
         };
         tx_types_counter.increase_by_tx_type(tx_type);
@@ -202,7 +202,7 @@ impl ValidateTx68 for EthMessageFilter {
                     "invalid tx size in eth68 announcement"
                 );
 
-                return ValidationOutcome::Ignore
+                return ValidationOutcome::Ignore;
             }
         }
         if let Some(reasonable_min_encoded_tx_length) = self.min_encoded_tx_length(tx_type) {

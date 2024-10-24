@@ -1,4 +1,5 @@
-use alloy_primitives::{bytes::BufMut, keccak256, B256};
+use alloy_primitives::{bytes::BufMut, B256};
+use core_reth_primitives::sha3;
 use itertools::Itertools;
 use reth_config::config::{EtlConfig, HashingConfig};
 use reth_db::tables;
@@ -75,7 +76,7 @@ where
     fn execute(&mut self, provider: &Provider, input: ExecInput) -> Result<ExecOutput, StageError> {
         let tx = provider.tx_ref();
         if input.target_reached() {
-            return Ok(ExecOutput::done(input.checkpoint()))
+            return Ok(ExecOutput::done(input.checkpoint()));
         }
 
         let (from_block, to_block) = input.next_block_range().into_inner();
@@ -103,8 +104,8 @@ where
                 rayon::spawn(move || {
                     for (address, slot) in chunk {
                         let mut addr_key = Vec::with_capacity(64);
-                        addr_key.put_slice(keccak256(address).as_slice());
-                        addr_key.put_slice(keccak256(slot.key).as_slice());
+                        addr_key.put_slice(sha3(address).as_slice());
+                        addr_key.put_slice(sha3(slot.key).as_slice());
                         let _ = tx.send((addr_key, CompactU256::from(slot.value)));
                     }
                 });
@@ -269,7 +270,7 @@ mod tests {
 
                     // Continue from checkpoint
                     input.checkpoint = Some(checkpoint);
-                    continue
+                    continue;
                 }
                 assert_eq!(checkpoint.block_number, previous_stage);
                 assert_matches!(checkpoint.storage_hashing_stage_checkpoint(), Some(StorageHashingCheckpoint {
@@ -287,7 +288,7 @@ mod tests {
                     "execution validation"
                 );
 
-                break
+                break;
             }
             panic!("Failed execution");
         }
@@ -369,7 +370,7 @@ mod tests {
 
                             for _ in 0..2 {
                                 let new_entry = StorageEntry {
-                                    key: keccak256([rng.gen::<u8>()]),
+                                    key: sha3([rng.gen::<u8>()]),
                                     value: U256::from(rng.gen::<u8>() % 30 + 1),
                                 };
                                 self.insert_storage_entry(
@@ -392,7 +393,7 @@ mod tests {
                             tx,
                             (block_number, Address::random()).into(),
                             StorageEntry {
-                                key: keccak256("mining"),
+                                key: sha3("mining"),
                                 value: U256::from(rng.gen::<u32>()),
                             },
                             progress.header.number == stage_progress,
@@ -423,7 +424,7 @@ mod tests {
                 let start_block = input.checkpoint().block_number + 1;
                 let end_block = output.checkpoint.block_number;
                 if start_block > end_block {
-                    return Ok(())
+                    return Ok(());
                 }
             }
             self.check_hashed_storage()
@@ -456,9 +457,8 @@ mod tests {
                     let mut expected = 0;
 
                     while let Some((address, entry)) = storage_cursor.next()? {
-                        let key = keccak256(entry.key);
-                        let got =
-                            hashed_storage_cursor.seek_by_key_subkey(keccak256(address), key)?;
+                        let key = sha3(entry.key);
+                        let got = hashed_storage_cursor.seek_by_key_subkey(sha3(address), key)?;
                         assert_eq!(
                             got,
                             Some(StorageEntry { key, ..entry }),
@@ -494,8 +494,8 @@ mod tests {
             tx.put::<tables::PlainStorageState>(bn_address.address(), entry)?;
 
             if hash {
-                let hashed_address = keccak256(bn_address.address());
-                let hashed_entry = StorageEntry { key: keccak256(entry.key), value: entry.value };
+                let hashed_address = sha3(bn_address.address());
+                let hashed_entry = StorageEntry { key: sha3(entry.key), value: entry.value };
 
                 if let Some(e) = tx
                     .cursor_dup_write::<tables::HashedStorages>()?
@@ -524,7 +524,7 @@ mod tests {
 
                 while let Some((bn_address, entry)) = rev_changeset_walker.next().transpose()? {
                     if bn_address.block_number() < target_block {
-                        break
+                        break;
                     }
 
                     if storage_cursor

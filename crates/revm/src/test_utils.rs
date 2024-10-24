@@ -1,9 +1,10 @@
 use alloc::vec::Vec;
 use alloy_primitives::{
-    keccak256,
     map::{HashMap, HashSet},
     Address, BlockNumber, Bytes, StorageKey, B256, U256,
 };
+use core_reth_primitives::sha3;
+
 use reth_primitives::{Account, Bytecode};
 use reth_storage_api::{
     AccountReader, BlockHashReader, StateProofProvider, StateProvider, StateRootProvider,
@@ -33,7 +34,7 @@ impl StateProviderTest {
         storage: HashMap<StorageKey, U256>,
     ) {
         if let Some(bytecode) = bytecode {
-            let hash = keccak256(&bytecode);
+            let hash = sha3(&bytecode);
             account.bytecode_hash = Some(hash);
             self.contracts.insert(hash, Bytecode::new_raw(bytecode));
         }

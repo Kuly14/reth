@@ -7,11 +7,11 @@ use crate::{
 };
 use alloy_consensus::EMPTY_ROOT_HASH;
 use alloy_primitives::{
-    keccak256,
     map::{HashMap, HashSet},
     Bytes, B256,
 };
 use alloy_rlp::{BufMut, Decodable, Encodable};
+use core_reth_primitives::sha3;
 use itertools::{Either, Itertools};
 use reth_execution_errors::{StateProofError, TrieWitnessError};
 use reth_trie_common::{
@@ -86,7 +86,7 @@ where
         state: HashedPostState,
     ) -> Result<HashMap<B256, Bytes>, TrieWitnessError> {
         if state.is_empty() {
-            return Ok(self.witness)
+            return Ok(self.witness);
         }
 
         let proof_targets = self.get_proof_targets(&state)?;
@@ -172,7 +172,7 @@ where
                 // The subtree only contains the proof for a single target.
                 let node =
                     proof.subtree.get(&key).ok_or(TrieWitnessError::MissingTargetNode(key))?;
-                self.witness.insert(keccak256(node.as_ref()), node.clone()); // record in witness
+                self.witness.insert(sha3(node.as_ref()), node.clone()); // record in witness
                 Ok(node.clone())
             })?;
         }
@@ -190,7 +190,7 @@ where
             // The subtree only contains the proof for a single target.
             let node =
                 proof.account_subtree.get(&key).ok_or(TrieWitnessError::MissingTargetNode(key))?;
-            self.witness.insert(keccak256(node.as_ref()), node.clone()); // record in witness
+            self.witness.insert(sha3(node.as_ref()), node.clone()); // record in witness
             Ok(node.clone())
         })?;
 
@@ -209,7 +209,7 @@ where
         let mut proof_iter = proof.into_iter().enumerate().peekable();
         while let Some((idx, (path, encoded))) = proof_iter.next() {
             // Record the node in witness.
-            self.witness.insert(keccak256(encoded.as_ref()), encoded.clone());
+            self.witness.insert(sha3(encoded.as_ref()), encoded.clone());
 
             let mut next_path = path.clone();
             match TrieNode::decode(&mut &encoded[..])? {
@@ -241,7 +241,7 @@ where
                 }
                 TrieNode::EmptyRoot => {
                     if idx != 0 || proof_iter.peek().is_some() {
-                        return Err(TrieWitnessError::UnexpectedEmptyRoot(next_path))
+                        return Err(TrieWitnessError::UnexpectedEmptyRoot(next_path));
                     }
                 }
             };
@@ -325,13 +325,13 @@ where
                                             hash_builder.add_branch(child_path, hash, false);
                                         }
                                     }
-                                    break
+                                    break;
                                 }
                                 TrieNode::Leaf(leaf) => {
                                     let mut child_path = path;
                                     child_path.extend_from_slice(&leaf.key);
                                     hash_builder.add_leaf(child_path, &leaf.value);
-                                    break
+                                    break;
                                 }
                                 TrieNode::Extension(ext) => {
                                     path.extend_from_slice(&ext.key);

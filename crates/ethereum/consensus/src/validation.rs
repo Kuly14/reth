@@ -21,7 +21,7 @@ pub fn validate_block_post_execution<ChainSpec: EthereumHardforks>(
         return Err(ConsensusError::BlockGasUsed {
             gas: GotExpected { got: cumulative_gas_used, expected: block.gas_used },
             gas_spent_by_tx: gas_spent_by_transactions(receipts),
-        })
+        });
     }
 
     // Before Byzantium, receipts contained state root that would mean that expensive
@@ -33,20 +33,20 @@ pub fn validate_block_post_execution<ChainSpec: EthereumHardforks>(
             verify_receipts(block.header.receipts_root, block.header.logs_bloom, receipts)
         {
             tracing::debug!(%error, ?receipts, "receipts verification failed");
-            return Err(error)
+            return Err(error);
         }
     }
 
     // Validate that the header requests hash matches the calculated requests hash
     if chain_spec.is_prague_active_at_timestamp(block.timestamp) {
         let Some(header_requests_hash) = block.header.requests_hash else {
-            return Err(ConsensusError::RequestsHashMissing)
+            return Err(ConsensusError::RequestsHashMissing);
         };
         let requests_hash = requests.requests_hash();
         if requests_hash != header_requests_hash {
             return Err(ConsensusError::BodyRequestsHashDiff(
                 GotExpected::new(requests_hash, header_requests_hash).into(),
-            ))
+            ));
         }
     }
 
@@ -88,13 +88,13 @@ fn compare_receipts_root_and_logs_bloom(
     if calculated_receipts_root != expected_receipts_root {
         return Err(ConsensusError::BodyReceiptRootDiff(
             GotExpected { got: calculated_receipts_root, expected: expected_receipts_root }.into(),
-        ))
+        ));
     }
 
     if calculated_logs_bloom != expected_logs_bloom {
         return Err(ConsensusError::BodyBloomLogDiff(
             GotExpected { got: calculated_logs_bloom, expected: expected_logs_bloom }.into(),
-        ))
+        ));
     }
 
     Ok(())

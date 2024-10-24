@@ -196,7 +196,7 @@ where
     /// Execute the stage
     fn execute(&mut self, provider: &Provider, input: ExecInput) -> Result<ExecOutput, StageError> {
         if input.target_reached() {
-            return Ok(ExecOutput::done(input.checkpoint()))
+            return Ok(ExecOutput::done(input.checkpoint()));
         }
 
         let start_block = input.next_block();
@@ -319,7 +319,7 @@ where
                 cumulative_gas,
                 batch_start.elapsed(),
             ) {
-                break
+                break;
             }
         }
 
@@ -356,7 +356,7 @@ where
                 // means that we didn't send the notification to ExExes
                 return Err(StageError::PostExecuteCommit(
                     "Previous post execute commit input wasn't processed",
-                ))
+                ));
             }
         }
 
@@ -408,7 +408,7 @@ where
         if range.is_empty() {
             return Ok(UnwindOutput {
                 checkpoint: input.checkpoint.with_block_number(input.unwind_to),
-            })
+            });
         }
 
         // Unwind account and storage changesets, as well as receipts.
@@ -636,11 +636,11 @@ where
             loop {
                 if let Some(indices) = provider.block_body_indices(last_block)? {
                     if indices.last_tx_num() <= last_receipt_num {
-                        break
+                        break;
                     }
                 }
                 if last_block == 0 {
-                    break
+                    break;
                 }
                 last_block -= 1;
             }
@@ -651,7 +651,7 @@ where
             return Err(StageError::MissingStaticFileData {
                 block: missing_block,
                 segment: StaticFileSegment::Receipts,
-            })
+            });
         }
     }
 
@@ -662,9 +662,10 @@ where
 mod tests {
     use super::*;
     use crate::test_utils::TestStageDB;
-    use alloy_primitives::{address, hex_literal::hex, keccak256, Address, B256, U256};
+    use alloy_primitives::{address, hex_literal::hex, Address, B256, U256};
     use alloy_rlp::Decodable;
     use assert_matches::assert_matches;
+    use core_reth_primitives::sha3;
     use reth_chainspec::ChainSpecBuilder;
     use reth_db_api::{models::AccountBeforeTx, transaction::DbTxMut};
     use reth_evm::execute::BasicBlockExecutorProvider;
@@ -877,7 +878,7 @@ mod tests {
         let acc2 = address!("a94f5374fce5edbc8e2a8697c15331677e6ebf0b");
         let code = hex!("5a465a905090036002900360015500");
         let balance = U256::from(0x3635c9adc5dea00000u128);
-        let code_hash = keccak256(code);
+        let code_hash = sha3(code);
         db_tx
             .put::<tables::PlainAccountState>(
                 acc1,
@@ -1019,7 +1020,7 @@ mod tests {
         // variables
         let code = hex!("5a465a905090036002900360015500");
         let balance = U256::from(0x3635c9adc5dea00000u128);
-        let code_hash = keccak256(code);
+        let code_hash = sha3(code);
         // pre state
         let provider = factory.provider_rw().unwrap();
 
@@ -1141,7 +1142,7 @@ mod tests {
 
         let code = hex!("73095e7baea6a6c7c4c2dfeb977efac326af552d8731ff00");
         let balance = U256::from(0x0de0b6b3a7640000u64);
-        let code_hash = keccak256(code);
+        let code_hash = sha3(code);
 
         // pre state
         let caller_info = Account { nonce: 0, balance, bytecode_hash: None };

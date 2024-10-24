@@ -24,9 +24,9 @@ impl NetworkStackId {
     /// Returns the [`NetworkStackId`] that matches the given chain spec.
     pub fn id(chain: impl EthChainSpec) -> Option<&'static [u8]> {
         if chain.chain().is_optimism() {
-            return Some(Self::OPEL)
+            return Some(Self::OPEL);
         } else if chain.chain().is_ethereum() {
-            return Some(Self::ETH)
+            return Some(Self::ETH);
         }
 
         None

@@ -367,7 +367,7 @@ impl StaticFileProviderRW {
                 self.writer.user_header().segment(),
                 expected_block_number,
                 next_static_file_block,
-            ))
+            ));
         }
         Ok(())
     }
@@ -412,7 +412,7 @@ impl StaticFileProviderRW {
                     self.writer
                         .prune_rows(len as usize)
                         .map_err(|e| ProviderError::NippyJar(e.to_string()))?;
-                    break
+                    break;
                 }
 
                 remaining_rows -= len;
@@ -680,7 +680,7 @@ impl StaticFileProviderRW {
         if self.prune_on_commit.is_some() {
             return Err(ProviderError::NippyJar(
                 "Pruning should be committed before appending or pruning more data".to_string(),
-            ))
+            ));
         }
         Ok(())
     }

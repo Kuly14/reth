@@ -45,7 +45,7 @@ where
             Some(range) => range,
             None => {
                 trace!(target: "pruner", "No transactions to prune");
-                return Ok(SegmentOutput::done())
+                return Ok(SegmentOutput::done());
             }
         };
 

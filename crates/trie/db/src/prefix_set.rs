@@ -1,4 +1,5 @@
-use alloy_primitives::{keccak256, BlockNumber, B256};
+use alloy_primitives::{BlockNumber, B256};
+use core_reth_primitives::sha3;
 use derive_more::Deref;
 use reth_db::tables;
 use reth_db_api::{
@@ -39,7 +40,7 @@ impl<TX: DbTx> PrefixSetLoader<'_, TX> {
         let mut account_plain_state_cursor = self.cursor_read::<tables::PlainAccountState>()?;
         for account_entry in account_changeset_cursor.walk_range(range.clone())? {
             let (_, AccountBeforeTx { address, .. }) = account_entry?;
-            let hashed_address = keccak256(address);
+            let hashed_address = sha3(address);
             account_prefix_set.insert(Nibbles::unpack(hashed_address));
 
             if account_plain_state_cursor.seek_exact(address)?.is_none() {
@@ -53,12 +54,12 @@ impl<TX: DbTx> PrefixSetLoader<'_, TX> {
         let storage_range = BlockNumberAddress::range(range);
         for storage_entry in storage_cursor.walk_range(storage_range)? {
             let (BlockNumberAddress((_, address)), StorageEntry { key, .. }) = storage_entry?;
-            let hashed_address = keccak256(address);
+            let hashed_address = sha3(address);
             account_prefix_set.insert(Nibbles::unpack(hashed_address));
             storage_prefix_sets
                 .entry(hashed_address)
                 .or_default()
-                .insert(Nibbles::unpack(keccak256(key)));
+                .insert(Nibbles::unpack(sha3(key)));
         }
 
         Ok(TriePrefixSets {

@@ -11,9 +11,10 @@ use alloy_eips::{
     eip2930::AccessList,
     eip7702::SignedAuthorization,
 };
-use alloy_primitives::{keccak256, Address, Bytes, ChainId, TxHash, TxKind, B256, U256};
+use alloy_primitives::{Address, Bytes, ChainId, TxHash, TxKind, B256, U256};
 use alloy_rlp::{Decodable, Encodable, Error as RlpError, Header};
 use core::mem;
+use core_reth_primitives::sha3;
 use derive_more::{AsRef, Deref};
 use once_cell as _;
 #[cfg(not(feature = "std"))]
@@ -336,7 +337,7 @@ impl Transaction {
 
         // Check if max_fee_per_gas is less than base_fee
         if max_fee_per_gas < base_fee {
-            return None
+            return None;
         }
 
         // Calculate the difference between max_fee_per_gas and base_fee
@@ -908,7 +909,7 @@ impl TransactionSignedNoHash {
         // pre-allocate buffer for the transaction
         let mut buf = Vec::with_capacity(128 + self.transaction.input().len());
         self.transaction.encode_with_signature(&self.signature, &mut buf, false);
-        keccak256(&buf)
+        sha3(&buf)
     }
 
     /// Recover signer from signature and hash.
@@ -919,7 +920,7 @@ impl TransactionSignedNoHash {
         // `from` address.
         #[cfg(feature = "optimism")]
         if let Transaction::Deposit(TxDeposit { from, .. }) = self.transaction {
-            return Some(from)
+            return Some(from);
         }
 
         let signature_hash = self.signature_hash();
@@ -948,7 +949,7 @@ impl TransactionSignedNoHash {
         #[cfg(feature = "optimism")]
         {
             if let Transaction::Deposit(TxDeposit { from, .. }) = self.transaction {
-                return Some(from)
+                return Some(from);
             }
 
             // pre bedrock system transactions were sent from the zero address as legacy
@@ -956,11 +957,11 @@ impl TransactionSignedNoHash {
             //
             // NOTE: this is very hacky and only relevant for op-mainnet pre bedrock
             if self.is_legacy() && self.signature == optimism_deposit_tx_signature() {
-                return Some(Address::ZERO)
+                return Some(Address::ZERO);
             }
         }
 
-        recover_signer_unchecked(&self.signature, keccak256(buffer))
+        recover_signer_unchecked(&self.signature, sha3(buffer))
     }
 
     /// Converts into a transaction type with its hash: [`TransactionSigned`].
@@ -1161,7 +1162,7 @@ impl TransactionSigned {
         // `from` address.
         #[cfg(feature = "optimism")]
         if let Transaction::Deposit(TxDeposit { from, .. }) = self.transaction {
-            return Some(from)
+            return Some(from);
         }
         let signature_hash = self.signature_hash();
         recover_signer(&self.signature, signature_hash)
@@ -1177,7 +1178,7 @@ impl TransactionSigned {
         // `from` address.
         #[cfg(feature = "optimism")]
         if let Transaction::Deposit(TxDeposit { from, .. }) = self.transaction {
-            return Some(from)
+            return Some(from);
         }
         let signature_hash = self.signature_hash();
         recover_signer_unchecked(&self.signature, signature_hash)
@@ -1270,7 +1271,7 @@ impl TransactionSigned {
     /// Calculate transaction hash, eip2728 transaction does not contain rlp header and start with
     /// tx type.
     pub fn recalculate_hash(&self) -> B256 {
-        keccak256(self.encoded_2718())
+        sha3(self.encoded_2718())
     }
 
     /// Create a new signed transaction from a transaction and its signature.
@@ -1306,7 +1307,7 @@ impl TransactionSigned {
         let transaction_payload_len = header.payload_length;
 
         if transaction_payload_len > remaining_len {
-            return Err(RlpError::InputTooShort)
+            return Err(RlpError::InputTooShort);
         }
 
         let mut transaction = TxLegacy {
@@ -1324,11 +1325,11 @@ impl TransactionSigned {
         // check the new length, compared to the original length and the header length
         let decoded = remaining_len - data.len();
         if decoded != transaction_payload_len {
-            return Err(RlpError::UnexpectedLength)
+            return Err(RlpError::UnexpectedLength);
         }
 
         let tx_length = header.payload_length + header.length();
-        let hash = keccak256(&original_encoding[..tx_length]);
+        let hash = sha3(&original_encoding[..tx_length]);
         Ok((transaction, hash, signature))
     }
 

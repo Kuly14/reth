@@ -42,8 +42,9 @@ use utils::*;
 mod tests {
     use super::*;
     use crate::test_utils::{StorageKind, TestStageDB};
-    use alloy_primitives::{address, hex_literal::hex, keccak256, BlockNumber, B256, U256};
+    use alloy_primitives::{address, hex_literal::hex, BlockNumber, B256, U256};
     use alloy_rlp::Decodable;
+    use core_reth_primitives::sha3;
     use reth_chainspec::ChainSpecBuilder;
     use reth_db::{
         mdbx::{cursor::Cursor, RW},
@@ -112,7 +113,7 @@ mod tests {
         // insert pre state
         let provider_rw = test_db.factory.provider_rw().unwrap();
         let code = hex!("5a465a905090036002900360015500");
-        let code_hash = keccak256(hex!("5a465a905090036002900360015500"));
+        let code_hash = sha3(hex!("5a465a905090036002900360015500"));
         provider_rw
             .tx_ref()
             .put::<tables::PlainAccountState>(

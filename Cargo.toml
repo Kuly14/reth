@@ -288,6 +288,9 @@ inherits = "release"
 lto = "fat"
 
 [workspace.dependencies]
+# core
+core-reth-primitives = { git = "https://github.com/Kuly14/core-reth-primitives.git" }
+
 # reth
 op-reth = { path = "crates/optimism/bin" }
 reth = { path = "bin/reth" }

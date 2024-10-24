@@ -244,7 +244,8 @@ impl From<ParallelStateRootError> for ProviderError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use alloy_primitives::{keccak256, Address, U256};
+    use alloy_primitives::{Address, U256};
+    use core_reth_primitives::sha3;
     use rand::Rng;
     use reth_primitives::{Account, StorageEntry};
     use reth_provider::{test_utils::create_test_provider_factory, HashingWriter};
@@ -304,7 +305,7 @@ mod tests {
 
         let mut hashed_state = HashedPostState::default();
         for (address, (account, storage)) in &mut state {
-            let hashed_address = keccak256(address);
+            let hashed_address = sha3(address);
 
             let should_update_account = rng.gen_bool(0.5);
             if should_update_account {
@@ -315,7 +316,7 @@ mod tests {
             let should_update_storage = rng.gen_bool(0.3);
             if should_update_storage {
                 for (slot, value) in storage.iter_mut() {
-                    let hashed_slot = keccak256(slot);
+                    let hashed_slot = sha3(slot);
                     *value = U256::from(rng.gen::<u64>());
                     hashed_state
                         .storages

@@ -1,4 +1,46 @@
 # reth
+## TODO
+
+###Hashing
+- [x] blockchain-tree-api
+- [x] blockchain-tree
+- [x] chain-state
+- [x] chainspec
+- [x] cli
+- [x] config
+- [x] consensus
+- [x] e2e-test-utils
+- [x] engine
+- [x] errors
+- [x] ethereum-forks
+- [x] ethereum
+- [x] etl
+- [x] evm
+- [x] exex
+- [x] fs-util
+- [x] metrics
+- [x] net
+- [x] node
+- [x] optimism
+- [x] payload
+- [x] primitives-traits
+- [x] primitives
+- [x] prune
+- [x] revm
+- [x] rpc
+- [x] stages
+- [x] static-file
+- [x] storage
+- [x] tasks
+- [x] tokio-util
+- [x] tracing
+- [x] transaction-pool
+- [ ] trie
+
+Other Todo:
+in some crates like the node crate are features like keccak-asm, remove
+
+Delete entire keccak-asm feature from the crate
 
 [![CI status](https://github.com/paradigmxyz/reth/workflows/unit/badge.svg)][gh-ci]
 [![cargo-deny status](https://github.com/paradigmxyz/reth/workflows/deny/badge.svg)][gh-deny]

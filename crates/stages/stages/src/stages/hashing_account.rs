@@ -1,4 +1,5 @@
-use alloy_primitives::{keccak256, B256};
+use alloy_primitives::B256;
+use core_reth_primitives::sha3;
 use itertools::Itertools;
 use reth_config::config::{EtlConfig, HashingConfig};
 use reth_db::{tables, RawKey, RawTable, RawValue};
@@ -140,7 +141,7 @@ where
     /// Execute the stage.
     fn execute(&mut self, provider: &Provider, input: ExecInput) -> Result<ExecOutput, StageError> {
         if input.target_reached() {
-            return Ok(ExecOutput::done(input.checkpoint()))
+            return Ok(ExecOutput::done(input.checkpoint()));
         }
 
         let (from_block, to_block) = input.next_block_range().into_inner();
@@ -171,7 +172,7 @@ where
                 rayon::spawn(move || {
                     for (address, account) in chunk {
                         let address = address.key().unwrap();
-                        let _ = tx.send((RawKey::new(keccak256(address)), account));
+                        let _ = tx.send((RawKey::new(sha3(address)), account));
                     }
                 });
 
@@ -378,7 +379,7 @@ mod tests {
                     let mut hashed_acc_cursor = tx.cursor_read::<tables::HashedAccounts>()?;
 
                     while let Some((address, account)) = acc_cursor.next()? {
-                        let hashed_addr = keccak256(address);
+                        let hashed_addr = sha3(address);
                         if let Some((_, acc)) = hashed_acc_cursor.seek_exact(hashed_addr)? {
                             assert_eq!(acc, account)
                         }
@@ -403,7 +404,7 @@ mod tests {
                             balance: balance - U256::from(1),
                             bytecode_hash: None,
                         };
-                        let hashed_addr = keccak256(address);
+                        let hashed_addr = sha3(address);
                         if let Some((_, acc)) = hashed_acc_cursor.seek_exact(hashed_addr)? {
                             assert_eq!(acc, old_acc)
                         }
@@ -465,7 +466,7 @@ mod tests {
                     let start_block = input.next_block();
                     let end_block = output.checkpoint.block_number;
                     if start_block > end_block {
-                        return Ok(())
+                        return Ok(());
                     }
                 }
                 self.check_hashed_accounts()

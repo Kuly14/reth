@@ -12,6 +12,9 @@ description = "Merkle trie implementation"
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 # reth
 reth-execution-errors.workspace = true
 reth-primitives.workspace = true

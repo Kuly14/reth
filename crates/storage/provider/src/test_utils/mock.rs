@@ -9,11 +9,11 @@ use crate::{
 use alloy_consensus::constants::EMPTY_ROOT_HASH;
 use alloy_eips::{BlockHashOrNumber, BlockId, BlockNumberOrTag};
 use alloy_primitives::{
-    keccak256,
     map::{HashMap, HashSet},
     Address, BlockHash, BlockNumber, Bytes, Sealable, StorageKey, StorageValue, TxHash, TxNumber,
     B256, U256,
 };
+use core_reth_primitives::sha3;
 use parking_lot::Mutex;
 use reth_chainspec::{ChainInfo, ChainSpec};
 use reth_db::mock::{DatabaseMock, TxMock};
@@ -88,7 +88,7 @@ impl ExtendedAccount {
 
     /// Set bytecode and bytecode hash on the extended account
     pub fn with_bytecode(mut self, bytecode: Bytes) -> Self {
-        let hash = keccak256(&bytecode);
+        let hash = sha3(&bytecode);
         self.account.bytecode_hash = Some(hash);
         self.bytecode = Some(Bytecode::new_raw(bytecode));
         self
@@ -294,7 +294,7 @@ impl TransactionsProvider for MockEthProvider {
                         excess_blob_gas: block.header.excess_blob_gas,
                         timestamp: block.header.timestamp,
                     };
-                    return Ok(Some((tx.clone(), meta)))
+                    return Ok(Some((tx.clone(), meta)));
                 }
             }
         }
@@ -306,7 +306,7 @@ impl TransactionsProvider for MockEthProvider {
         let mut current_tx_number: TxNumber = 0;
         for block in lock.values() {
             if current_tx_number + (block.body.transactions.len() as TxNumber) > id {
-                return Ok(Some(block.header.number))
+                return Ok(Some(block.header.number));
             }
             current_tx_number += block.body.transactions.len() as TxNumber;
         }

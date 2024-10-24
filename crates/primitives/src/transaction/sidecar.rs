@@ -4,8 +4,9 @@ use crate::{Signature, Transaction, TransactionSigned};
 use alloy_consensus::{
     constants::EIP4844_TX_TYPE_ID, transaction::TxEip4844, TxEip4844WithSidecar,
 };
-use alloy_primitives::{keccak256, TxHash};
+use alloy_primitives::TxHash;
 use alloy_rlp::{Decodable, Error as RlpError, Header};
+use core_reth_primitives::sha3;
 use serde::{Deserialize, Serialize};
 
 #[doc(inline)]
@@ -191,7 +192,7 @@ impl BlobTransaction {
         // decode the _first_ list header for the rest of the transaction
         let outer_header = Header::decode(data)?;
         if !outer_header.list {
-            return Err(RlpError::Custom("PooledTransactions blob tx must be encoded as a list"))
+            return Err(RlpError::Custom("PooledTransactions blob tx must be encoded as a list"));
         }
 
         let outer_remaining_len = data.len();
@@ -203,7 +204,7 @@ impl BlobTransaction {
         if !inner_header.list {
             return Err(RlpError::Custom(
                 "PooledTransactions inner blob tx must be encoded as a list",
-            ))
+            ));
         }
 
         let inner_remaining_len = data.len();
@@ -217,7 +218,7 @@ impl BlobTransaction {
         // the inner header only decodes the transaction and signature, so we check the length here
         let inner_consumed = inner_remaining_len - data.len();
         if inner_consumed != inner_header.payload_length {
-            return Err(RlpError::UnexpectedLength)
+            return Err(RlpError::UnexpectedLength);
         }
 
         // All that's left are the blobs, commitments, and proofs
@@ -229,7 +230,7 @@ impl BlobTransaction {
         // `tx_type (0x03) || rlp([tx_payload_body, blobs, commitments, proofs])`
         //
         // The transaction hash however, is:
-        // `keccak256(tx_type (0x03) || rlp(tx_payload_body))`
+        // `sha3(tx_type (0x03) || rlp(tx_payload_body))`
         //
         // Note that this is `tx_payload_body`, not `[tx_payload_body]`, which would be
         // `[[chain_id, nonce, max_priority_fee_per_gas, ...]]`, i.e. a list within a list.
@@ -241,12 +242,12 @@ impl BlobTransaction {
         // signature for hashing without a header. We then hash the result.
         let mut buf = Vec::new();
         transaction.encode_with_signature(&signature, &mut buf, false);
-        let hash = keccak256(&buf);
+        let hash = sha3(&buf);
 
         // the outer header is for the entire transaction, so we check the length here
         let outer_consumed = outer_remaining_len - data.len();
         if outer_consumed != outer_header.payload_length {
-            return Err(RlpError::UnexpectedLength)
+            return Err(RlpError::UnexpectedLength);
         }
 
         Ok(Self { transaction: TxEip4844WithSidecar { tx: transaction, sidecar }, hash, signature })
@@ -339,7 +340,7 @@ mod tests {
 
             // Ensure the entry is a file and not a directory
             if !file_path.is_file() || file_path.extension().unwrap_or_default() != "json" {
-                continue
+                continue;
             }
 
             // Read the contents of the JSON file into a string.

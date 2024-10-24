@@ -1,5 +1,6 @@
-use alloy_primitives::{keccak256, Bytes, B256};
+use alloy_primitives::{Bytes, B256};
 use async_trait::async_trait;
+use core_reth_primitives::sha3;
 use jsonrpsee::core::RpcResult;
 use reth_network_api::NetworkInfo;
 use reth_rpc_api::Web3ApiServer;
@@ -33,7 +34,7 @@ where
 
     /// Handler for `web3_sha3`
     fn sha3(&self, input: Bytes) -> RpcResult<B256> {
-        Ok(keccak256(input))
+        Ok(sha3(input))
     }
 }
 

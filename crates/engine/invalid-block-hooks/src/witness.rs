@@ -1,7 +1,9 @@
 use std::{collections::HashMap, fmt::Debug, fs::File, io::Write, path::PathBuf};
 
-use alloy_primitives::{keccak256, B256, U256};
+use alloy_primitives::{B256, U256};
+
 use alloy_rpc_types_debug::ExecutionWitness;
+use core_reth_primitives::sha3;
 use eyre::OptionExt;
 use pretty_assertions::Comparison;
 use reth_chainspec::{EthChainSpec, EthereumHardforks};
@@ -131,7 +133,7 @@ where
         // referenced accounts + storage slots.
         let mut hashed_state = HashedPostState::from_bundle_state(&bundle_state.state);
         for (address, account) in db.cache.accounts {
-            let hashed_address = keccak256(address);
+            let hashed_address = sha3(address);
             hashed_state
                 .accounts
                 .insert(hashed_address, account.account.as_ref().map(|a| a.info.clone().into()));
@@ -146,7 +148,7 @@ where
 
                 for (slot, value) in account.storage {
                     let slot = B256::from(slot);
-                    let hashed_slot = keccak256(slot);
+                    let hashed_slot = sha3(slot);
                     storage.storage.insert(hashed_slot, value);
 
                     state_preimages.insert(hashed_slot, alloy_rlp::encode(slot).into());

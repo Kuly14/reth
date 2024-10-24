@@ -19,11 +19,12 @@ mod impl_secp256k1 {
         ecdsa::{RecoverableSignature, RecoveryId},
         Message, PublicKey, SecretKey, SECP256K1,
     };
-    use alloy_primitives::{keccak256, Parity, B256, U256};
+    use alloy_primitives::{Parity, B256, U256};
+    use core_reth_primitives::sha3;
 
     /// Recovers the address of the sender using secp256k1 pubkey recovery.
     ///
-    /// Converts the public key into an ethereum address by hashing the public key with keccak256.
+    /// Converts the public key into an ethereum address by hashing the public key with sha3.
     ///
     /// This does not ensure that the `s` value in the signature is low, and _just_ wraps the
     /// underlying secp256k1 library.
@@ -51,11 +52,11 @@ mod impl_secp256k1 {
     }
 
     /// Converts a public key into an ethereum address by hashing the encoded public key with
-    /// keccak256.
+    /// sha3.
     pub fn public_key_to_address(public: PublicKey) -> Address {
         // strip out the first byte because that should be the SECP256K1_TAG_PUBKEY_UNCOMPRESSED
         // tag returned by libsecp's uncompressed pubkey serialization
-        let hash = keccak256(&public.serialize_uncompressed()[1..]);
+        let hash = sha3(&public.serialize_uncompressed()[1..]);
         Address::from_slice(&hash[12..])
     }
 }
@@ -63,13 +64,14 @@ mod impl_secp256k1 {
 #[cfg_attr(feature = "secp256k1", allow(unused, unreachable_pub))]
 mod impl_k256 {
     use super::*;
-    use alloy_primitives::{keccak256, Parity, B256, U256};
+    use alloy_primitives::{Parity, B256, U256};
+    use core_reth_primitives::sha3;
     pub(crate) use k256::ecdsa::Error;
     use k256::ecdsa::{RecoveryId, SigningKey, VerifyingKey};
 
     /// Recovers the address of the sender using secp256k1 pubkey recovery.
     ///
-    /// Converts the public key into an ethereum address by hashing the public key with keccak256.
+    /// Converts the public key into an ethereum address by hashing the public key with sha3.
     ///
     /// This does not ensure that the `s` value in the signature is low, and _just_ wraps the
     /// underlying secp256k1 library.
@@ -105,16 +107,17 @@ mod impl_k256 {
     }
 
     /// Converts a public key into an ethereum address by hashing the encoded public key with
-    /// keccak256.
+    /// sha3.
     pub fn public_key_to_address(public: VerifyingKey) -> Address {
-        let hash = keccak256(&public.to_encoded_point(/* compress = */ false).as_bytes()[1..]);
+        let hash = sha3(&public.to_encoded_point(/* compress = */ false).as_bytes()[1..]);
         Address::from_slice(&hash[12..])
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use alloy_primitives::{keccak256, B256};
+    use alloy_primitives::B256;
+    use core_reth_primitives::sha3;
 
     #[cfg(feature = "secp256k1")]
     #[test]
@@ -125,7 +128,7 @@ mod tests {
         let signer = public_key_to_address(public);
 
         let message = b"hello world";
-        let hash = keccak256(message);
+        let hash = sha3(message);
         let signature =
             sign_message(B256::from_slice(&secret.secret_bytes()[..]), hash).expect("sign message");
 
@@ -147,7 +150,7 @@ mod tests {
         let signer = public_key_to_address(public);
 
         let message = b"hello world";
-        let hash = keccak256(message);
+        let hash = sha3(message);
         let signature =
             sign_message(B256::from_slice(&secret.to_bytes()[..]), hash).expect("sign message");
 
@@ -174,7 +177,7 @@ mod tests {
         assert_eq!(secp256k1_signer, k256_signer);
 
         let message = b"hello world";
-        let hash = keccak256(message);
+        let hash = sha3(message);
 
         let secp256k1_signature = impl_secp256k1::sign_message(
             B256::from_slice(&secp256k1_secret.secret_bytes()[..]),

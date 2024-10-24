@@ -1,9 +1,10 @@
 use crate::root::storage_root_unhashed;
 use alloy_consensus::constants::KECCAK_EMPTY;
 use alloy_genesis::GenesisAccount;
-use alloy_primitives::{keccak256, B256, U256};
+use alloy_primitives::{B256, U256};
 use alloy_rlp::{RlpDecodable, RlpEncodable};
 use alloy_trie::EMPTY_ROOT_HASH;
+use core_reth_primitives::sha3;
 use reth_primitives_traits::Account;
 use revm_primitives::AccountInfo;
 
@@ -45,7 +46,7 @@ impl From<GenesisAccount> for TrieAccount {
             nonce: account.nonce.unwrap_or_default(),
             balance: account.balance,
             storage_root,
-            code_hash: account.code.map_or(KECCAK_EMPTY, keccak256),
+            code_hash: account.code.map_or(KECCAK_EMPTY, sha3),
         }
     }
 }
@@ -127,7 +128,7 @@ mod tests {
         assert_eq!(trie_account.nonce, 10);
         assert_eq!(trie_account.balance, U256::from(1000));
         assert_eq!(trie_account.storage_root(), expected_storage_root);
-        assert_eq!(trie_account.code_hash, keccak256([0x60, 0x61]));
+        assert_eq!(trie_account.code_hash, sha3([0x60, 0x61]));
 
         // Check that the Account converts to the same TrieAccount
         assert_eq!(
@@ -135,7 +136,7 @@ mod tests {
                 Account {
                     nonce: 10,
                     balance: U256::from(1000),
-                    bytecode_hash: Some(keccak256([0x60, 0x61]))
+                    bytecode_hash: Some(sha3([0x60, 0x61]))
                 },
                 expected_storage_root
             )),
@@ -148,7 +149,7 @@ mod tests {
                 AccountInfo {
                     nonce: 10,
                     balance: U256::from(1000),
-                    code_hash: keccak256([0x60, 0x61]),
+                    code_hash: sha3([0x60, 0x61]),
                     ..Default::default()
                 },
                 expected_storage_root

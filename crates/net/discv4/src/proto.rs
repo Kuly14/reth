@@ -3,8 +3,10 @@
 use crate::{error::DecodePacketError, MAX_PACKET_SIZE, MIN_PACKET_SIZE};
 use alloy_primitives::{
     bytes::{Buf, BufMut, Bytes, BytesMut},
-    keccak256, B256,
+    B256,
 };
+use core_reth_primitives::sha3;
+
 use alloy_rlp::{
     Decodable, Encodable, Error as RlpError, Header, RlpDecodable, RlpEncodable,
     RlpEncodableWrapper,
@@ -114,10 +116,8 @@ impl Message {
         }
 
         // Sign the payload with the secret key using recoverable ECDSA
-        let signature: RecoverableSignature = SECP256K1.sign_ecdsa_recoverable(
-            &secp256k1::Message::from_digest(keccak256(&payload).0),
-            secret_key,
-        );
+        let signature: RecoverableSignature = SECP256K1
+            .sign_ecdsa_recoverable(&secp256k1::Message::from_digest(sha3(&payload).0), secret_key);
 
         // Serialize the signature and append it to the signature bytes
         let (rec, sig) = signature.serialize_compact();
@@ -126,7 +126,7 @@ impl Message {
         sig_bytes.unsplit(payload);
 
         // Calculate the hash of the signature bytes and append it to the datagram
-        let hash = keccak256(&sig_bytes);
+        let hash = sha3(&sig_bytes);
         datagram.extend_from_slice(hash.as_slice());
 
         // Append the signature bytes to the datagram
@@ -141,18 +141,18 @@ impl Message {
     /// Returns the decoded message and the public key of the sender.
     pub fn decode(packet: &[u8]) -> Result<Packet, DecodePacketError> {
         if packet.len() < MIN_PACKET_SIZE {
-            return Err(DecodePacketError::PacketTooShort)
+            return Err(DecodePacketError::PacketTooShort);
         }
 
         // parses the wire-protocol, every packet starts with a header:
         // packet-header = hash || signature || packet-type
-        // hash = keccak256(signature || packet-type || packet-data)
+        // hash = sha3(signature || packet-type || packet-data)
         // signature = sign(packet-type || packet-data)
 
-        let header_hash = keccak256(&packet[32..]);
+        let header_hash = sha3(&packet[32..]);
         let data_hash = B256::from_slice(&packet[..32]);
         if data_hash != header_hash {
-            return Err(DecodePacketError::HashMismatch)
+            return Err(DecodePacketError::HashMismatch);
         }
 
         let signature = &packet[32..96];
@@ -160,7 +160,7 @@ impl Message {
         let recoverable_sig = RecoverableSignature::from_compact(signature, recovery_id)?;
 
         // recover the public key
-        let msg = secp256k1::Message::from_digest(keccak256(&packet[97..]).0);
+        let msg = secp256k1::Message::from_digest(sha3(&packet[97..]).0);
 
         let pk = SECP256K1.recover_ecdsa(&msg, &recoverable_sig)?;
         let node_id = pk2id(&pk);
@@ -282,7 +282,7 @@ impl Decodable for FindNode {
         let b = &mut &**buf;
         let rlp_head = Header::decode(b)?;
         if !rlp_head.list {
-            return Err(RlpError::UnexpectedString)
+            return Err(RlpError::UnexpectedString);
         }
         let started_len = b.len();
 
@@ -296,7 +296,7 @@ impl Decodable for FindNode {
             return Err(RlpError::ListLengthMismatch {
                 expected: rlp_head.payload_length,
                 got: consumed,
-            })
+            });
         }
 
         let rem = rlp_head.payload_length - consumed;
@@ -324,7 +324,7 @@ impl Decodable for Neighbours {
         let b = &mut &**buf;
         let rlp_head = Header::decode(b)?;
         if !rlp_head.list {
-            return Err(RlpError::UnexpectedString)
+            return Err(RlpError::UnexpectedString);
         }
         let started_len = b.len();
 
@@ -338,7 +338,7 @@ impl Decodable for Neighbours {
             return Err(RlpError::ListLengthMismatch {
                 expected: rlp_head.payload_length,
                 got: consumed,
-            })
+            });
         }
 
         let rem = rlp_head.payload_length - consumed;
@@ -367,7 +367,7 @@ impl Decodable for EnrRequest {
         let b = &mut &**buf;
         let rlp_head = Header::decode(b)?;
         if !rlp_head.list {
-            return Err(RlpError::UnexpectedString)
+            return Err(RlpError::UnexpectedString);
         }
         let started_len = b.len();
 
@@ -381,7 +381,7 @@ impl Decodable for EnrRequest {
             return Err(RlpError::ListLengthMismatch {
                 expected: rlp_head.payload_length,
                 got: consumed,
-            })
+            });
         }
 
         let rem = rlp_head.payload_length - consumed;
@@ -475,7 +475,7 @@ impl Decodable for Ping {
         let b = &mut &**buf;
         let rlp_head = Header::decode(b)?;
         if !rlp_head.list {
-            return Err(RlpError::UnexpectedString)
+            return Err(RlpError::UnexpectedString);
         }
         let started_len = b.len();
 
@@ -499,7 +499,7 @@ impl Decodable for Ping {
             return Err(RlpError::ListLengthMismatch {
                 expected: rlp_head.payload_length,
                 got: consumed,
-            })
+            });
         }
         let rem = rlp_head.payload_length - consumed;
         b.advance(rem);
@@ -554,7 +554,7 @@ impl Decodable for Pong {
         let b = &mut &**buf;
         let rlp_head = Header::decode(b)?;
         if !rlp_head.list {
-            return Err(RlpError::UnexpectedString)
+            return Err(RlpError::UnexpectedString);
         }
         let started_len = b.len();
         let mut this = Self {
@@ -574,7 +574,7 @@ impl Decodable for Pong {
             return Err(RlpError::ListLengthMismatch {
                 expected: rlp_head.payload_length,
                 got: consumed,
-            })
+            });
         }
         let rem = rlp_head.payload_length - consumed;
         b.advance(rem);

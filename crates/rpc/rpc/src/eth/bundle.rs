@@ -2,8 +2,9 @@
 
 use std::sync::Arc;
 
-use alloy_primitives::{Keccak256, U256};
+use alloy_primitives::U256;
 use alloy_rpc_types_mev::{EthCallBundle, EthCallBundleResponse, EthCallBundleTransactionResult};
+use core_reth_primitives::Sha3;
 use jsonrpsee::core::RpcResult;
 use reth_chainspec::EthChainSpec;
 use reth_evm::{ConfigureEvm, ConfigureEvmEnv};
@@ -69,13 +70,13 @@ where
             return Err(EthApiError::InvalidParams(
                 EthBundleError::EmptyBundleTransactions.to_string(),
             )
-            .into())
+            .into());
         }
         if block_number == 0 {
             return Err(EthApiError::InvalidParams(
                 EthBundleError::BundleMissingBlockNumber.to_string(),
             )
-            .into())
+            .into());
         }
 
         let transactions = txs
@@ -103,7 +104,7 @@ where
             return Err(EthApiError::InvalidParams(
                 EthBundleError::Eip4844BlobGasExceeded.to_string(),
             )
-            .into())
+            .into());
         }
 
         let block_id: alloy_rpc_types::BlockId = state_block_number.into();
@@ -164,7 +165,7 @@ where
                 let mut coinbase_balance_after_tx = initial_coinbase;
                 let mut total_gas_used = 0u64;
                 let mut total_gas_fess = U256::ZERO;
-                let mut hasher = Keccak256::new();
+                let mut hasher = Sha3::new();
 
                 let mut evm = Call::evm_config(&eth_api).evm_with_env(db, env);
 

@@ -1,5 +1,6 @@
 use crate::{DatabaseHashedCursorFactory, DatabaseTrieCursorFactory, PrefixSetLoader};
-use alloy_primitives::{keccak256, Address, BlockNumber, B256, U256};
+use alloy_primitives::{Address, BlockNumber, B256, U256};
+use core_reth_primitives::sha3;
 use reth_db::tables;
 use reth_db_api::{
     cursor::DbCursorRO,
@@ -245,19 +246,19 @@ impl<TX: DbTx> DatabaseHashedPostState<TX> for HashedPostState {
         }
 
         let hashed_accounts =
-            accounts.into_iter().map(|(address, info)| (keccak256(address), info)).collect();
+            accounts.into_iter().map(|(address, info)| (sha3(address), info)).collect();
 
         let hashed_storages = storages
             .into_iter()
             .map(|(address, storage)| {
                 (
-                    keccak256(address),
+                    sha3(address),
                     HashedStorage::from_iter(
                         // The `wiped` flag indicates only whether previous storage entries
                         // should be looked up in db or not. For reverts it's a noop since all
                         // wiped changes had been written as storage reverts.
                         false,
-                        storage.into_iter().map(|(slot, value)| (keccak256(slot), value)),
+                        storage.into_iter().map(|(slot, value)| (sha3(slot), value)),
                     ),
                 )
             })

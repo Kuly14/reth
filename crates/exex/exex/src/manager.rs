@@ -136,7 +136,7 @@ impl ExExHandle {
                         );
 
                         self.next_notification_id = notification_id + 1;
-                        return Poll::Ready(Ok(()))
+                        return Poll::Ready(Ok(()));
                     }
                 }
                 // Do not handle [ExExNotification::ChainReorged] and
@@ -459,9 +459,9 @@ where
                 }
 
                 this.push_notification(notification);
-                continue
+                continue;
             }
-            break
+            break;
         }
 
         // Update capacity
@@ -481,7 +481,7 @@ where
             if let Some(notification) = this.buffer.get(notification_index) {
                 if let Poll::Ready(Err(err)) = exex.send(cx, notification) {
                     // The channel was closed, which is irrecoverable for the manager
-                    return Poll::Ready(Err(err.into()))
+                    return Poll::Ready(Err(err.into()));
                 }
             }
             min_id = min_id.min(exex.next_notification_id);
