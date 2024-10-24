@@ -251,7 +251,7 @@ where
             self.exex_head.block.number <= self.node_head.number
         {
             debug!(target: "exex::notifications", "ExEx head is on the canonical chain");
-            return Ok(None)
+            return Ok(None);
         }
 
         // If the head block is not found in the database, it means we're not on the canonical
@@ -264,7 +264,7 @@ where
             return Err(eyre::eyre!(
                 "Could not find notification for block hash {:?} in the WAL",
                 self.exex_head.block.hash
-            ))
+            ));
         };
 
         // Update the head block hash to the parent hash of the first committed block.
@@ -325,7 +325,7 @@ where
 
         if this.pending_check_canonical {
             if let Some(canonical_notification) = this.check_canonical()? {
-                return Poll::Ready(Some(Ok(canonical_notification)))
+                return Poll::Ready(Some(Ok(canonical_notification)));
             }
 
             // ExEx head is on the canonical chain, we no longer need to check it
@@ -343,7 +343,7 @@ where
                 debug!(target: "exex::notifications", range = ?chain.range(), "Backfill job returned a chain");
                 return Poll::Ready(Some(Ok(ExExNotification::ChainCommitted {
                     new: Arc::new(chain),
-                })))
+                })));
             }
 
             // Backfill job is done, remove it
@@ -351,7 +351,7 @@ where
         }
 
         let Some(notification) = ready!(this.notifications.poll_recv(cx)) else {
-            return Poll::Ready(None)
+            return Poll::Ready(None);
         };
 
         if let Some(committed_chain) = notification.committed_chain() {

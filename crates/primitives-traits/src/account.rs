@@ -1,9 +1,9 @@
 use alloy_consensus::constants::KECCAK_EMPTY;
 use alloy_genesis::GenesisAccount;
 use alloy_primitives::{Bytes, B256, U256};
-use core_reth_primitives::sha3;
 use byteorder::{BigEndian, ReadBytesExt};
 use bytes::Buf;
+use core_reth_primitives::sha3;
 use derive_more::Deref;
 use reth_codecs::{add_arbitrary_tests, Compact};
 use revm_primitives::{AccountInfo, Bytecode as RevmBytecode, BytecodeDecodeError, JumpTable};

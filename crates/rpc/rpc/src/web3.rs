@@ -1,6 +1,6 @@
 use alloy_primitives::{Bytes, B256};
-use core_reth_primitives::sha3;
 use async_trait::async_trait;
+use core_reth_primitives::sha3;
 use jsonrpsee::core::RpcResult;
 use reth_network_api::NetworkInfo;
 use reth_rpc_api::Web3ApiServer;

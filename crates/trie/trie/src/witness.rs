@@ -303,8 +303,8 @@ where
             match value {
                 Either::Left(branch_hash) => {
                     let parent_branch_path = path.slice(..path.len() - 1);
-                    if hash_builder.key.starts_with(&parent_branch_path)
-                        || trie_nodes
+                    if hash_builder.key.starts_with(&parent_branch_path) ||
+                        trie_nodes
                             .peek()
                             .map_or(false, |next| next.0.starts_with(&parent_branch_path))
                     {

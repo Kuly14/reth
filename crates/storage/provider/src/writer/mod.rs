@@ -458,8 +458,8 @@ where
         // * If we are in live sync. In this case, `UnifiedStorageWriter` is built without a static
         //   file writer.
         // * If there is any kind of receipt pruning
-        let mut storage_type = if self.static_file.is_none()
-            || self.database().prune_modes_ref().has_receipts_pruning()
+        let mut storage_type = if self.static_file.is_none() ||
+            self.database().prune_modes_ref().has_receipts_pruning()
         {
             StorageType::Database(self.database().tx_ref().cursor_write::<tables::Receipts>()?)
         } else {

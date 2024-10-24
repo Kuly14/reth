@@ -90,13 +90,13 @@ where
         Ok(Some(block_hash)) => {
             if block_hash == hash {
                 debug!("Genesis already written, skipping.");
-                return Ok(hash)
+                return Ok(hash);
             }
 
             return Err(InitDatabaseError::GenesisHashMismatch {
                 chainspec_hash: hash,
                 database_hash: block_hash,
-            })
+            });
         }
         Err(e) => return Err(dbg!(e).into()),
     }
@@ -361,7 +361,7 @@ where
             got: dump_state_root,
             expected: expected_state_root,
         })
-        .into())
+        .into());
     }
 
     debug!(target: "reth::cli",
@@ -394,7 +394,7 @@ where
             got: computed_state_root,
             expected: expected_state_root,
         })
-        .into())
+        .into());
     }
 
     // insert sync stages for stages that require state
@@ -428,7 +428,7 @@ fn parse_accounts(
 
     while let Ok(n) = reader.read_line(&mut line) {
         if n == 0 {
-            break
+            break;
         }
 
         let GenesisAccountWithAddress { genesis_account, address } = serde_json::from_str(&line)?;
@@ -555,7 +555,7 @@ where
                     "State root has been computed"
                 );
 
-                return Ok(root)
+                return Ok(root);
             }
         }
     }

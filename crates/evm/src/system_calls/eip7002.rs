@@ -48,7 +48,7 @@ where
             return Err(BlockValidationError::WithdrawalRequestsContractCall {
                 message: format!("execution failed: {e}"),
             }
-            .into())
+            .into());
         }
     };
 

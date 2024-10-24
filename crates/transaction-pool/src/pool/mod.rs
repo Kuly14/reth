@@ -308,7 +308,7 @@ where
     fn get_blob_transaction(&self, transaction: TransactionSigned) -> Option<BlobTransaction> {
         if let Ok(Some(sidecar)) = self.blob_store.get(transaction.hash()) {
             if let Ok(blob) = BlobTransaction::try_from_signed(transaction, sidecar) {
-                return Some(blob)
+                return Some(blob);
             }
         }
         None
@@ -337,7 +337,7 @@ where
                 if let Some(blob) = self.get_blob_transaction(tx) {
                     PooledTransactionsElement::BlobTransaction(blob)
                 } else {
-                    continue
+                    continue;
                 }
             } else {
                 match PooledTransactionsElement::try_from(tx) {
@@ -347,7 +347,7 @@ where
                             target: "txpool", %err,
                             "failed to convert transaction to pooled element; skipping",
                         );
-                        continue
+                        continue;
                     }
                 }
             };
@@ -356,7 +356,7 @@ where
             elements.push(pooled);
 
             if limit.exceeds(size) {
-                break
+                break;
             }
         }
 
@@ -539,7 +539,7 @@ where
             if added.iter().any(Result::is_ok) { self.discard_worst() } else { Default::default() };
 
         if discarded.is_empty() {
-            return added
+            return added;
         }
 
         {
@@ -569,7 +569,7 @@ where
             if listener.kind.is_propagate_only() && !propagate_allowed {
                 // only emit this hash to listeners that are only allowed to receive propagate only
                 // transactions, such as network
-                return !listener.sender.is_closed()
+                return !listener.sender.is_closed();
             }
 
             // broadcast all pending transactions to the listener
@@ -584,7 +584,7 @@ where
             if listener.kind.is_propagate_only() && !event.transaction.propagate {
                 // only emit this hash to listeners that are only allowed to receive propagate only
                 // transactions, such as network
-                return !listener.sender.is_closed()
+                return !listener.sender.is_closed();
             }
 
             listener.send(event.clone())
@@ -595,7 +595,7 @@ where
     fn on_new_blob_sidecar(&self, tx_hash: &TxHash, sidecar: &BlobTransactionSidecar) {
         let mut sidecar_listeners = self.blob_transaction_sidecar_listener.lock();
         if sidecar_listeners.is_empty() {
-            return
+            return;
         }
         let sidecar = Arc::new(sidecar.clone());
         sidecar_listeners.retain_mut(|listener| {
@@ -704,7 +704,7 @@ where
         hashes: Vec<TxHash>,
     ) -> Vec<Arc<ValidPoolTransaction<T::Transaction>>> {
         if hashes.is_empty() {
-            return Vec::new()
+            return Vec::new();
         }
         let removed = self.pool.write().remove_transactions(hashes);
 
@@ -722,7 +722,7 @@ where
         hashes: Vec<TxHash>,
     ) -> Vec<Arc<ValidPoolTransaction<T::Transaction>>> {
         if hashes.is_empty() {
-            return Vec::new()
+            return Vec::new();
         }
         let removed = self.pool.write().remove_transactions_and_descendants(hashes);
 
@@ -753,7 +753,7 @@ where
         A: HandleMempoolData,
     {
         if announcement.is_empty() {
-            return
+            return;
         }
         let pool = self.get_pool_data();
         announcement.retain_by_hash(|tx| !pool.contains(tx))
@@ -821,7 +821,7 @@ where
         txs: Vec<TxHash>,
     ) -> Vec<Arc<ValidPoolTransaction<T::Transaction>>> {
         if txs.is_empty() {
-            return Vec::new()
+            return Vec::new();
         }
         self.get_pool_data().get_all(txs).collect()
     }
@@ -829,7 +829,7 @@ where
     /// Notify about propagated transactions.
     pub(crate) fn on_propagated(&self, txs: PropagatedTransactions) {
         if txs.0.is_empty() {
-            return
+            return;
         }
         let mut listener = self.event_listener.write();
 
@@ -1049,9 +1049,9 @@ where
         loop {
             let next = self.iter.next()?;
             if self.kind.is_propagate_only() && !next.propagate {
-                continue
+                continue;
             }
-            return Some(*next.hash())
+            return Some(*next.hash());
         }
     }
 }
@@ -1073,12 +1073,12 @@ where
         loop {
             let next = self.iter.next()?;
             if self.kind.is_propagate_only() && !next.propagate {
-                continue
+                continue;
             }
             return Some(NewTransactionEvent {
                 subpool: SubPool::Pending,
                 transaction: next.clone(),
-            })
+            });
         }
     }
 }

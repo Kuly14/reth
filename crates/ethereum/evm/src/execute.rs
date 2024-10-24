@@ -167,7 +167,7 @@ where
                     transaction_gas_limit: transaction.gas_limit(),
                     block_available_gas,
                 }
-                .into())
+                .into());
             }
 
             self.evm_config.fill_tx_env(evm.tx_mut(), transaction, *sender);
@@ -308,8 +308,8 @@ mod tests {
         eip7002::{WITHDRAWAL_REQUEST_PREDEPLOY_ADDRESS, WITHDRAWAL_REQUEST_PREDEPLOY_CODE},
         eip7685::EMPTY_REQUESTS_HASH,
     };
-    use core_reth_primitives::sha3;
     use alloy_primitives::{b256, fixed_bytes, Bytes, TxKind, B256};
+    use core_reth_primitives::sha3;
     use reth_chainspec::{ChainSpecBuilder, ForkCondition};
     use reth_evm::execute::{
         BasicBlockExecutorProvider, BatchExecutor, BlockExecutorProvider, Executor,

@@ -7,6 +7,7 @@ use alloy_rpc_types::{
     Block, BlockTransactionsKind,
 };
 use alloy_rpc_types_eth::transaction::TransactionRequest;
+use core_reth_primitives::sha3;
 use jsonrpsee_types::ErrorObject;
 use reth_primitives::{
     logs_bloom,
@@ -21,8 +22,6 @@ use reth_storage_api::StateRootProvider;
 use reth_trie::{HashedPostState, HashedStorage};
 use revm::{db::CacheDB, Database};
 use revm_primitives::{Address, BlockEnv, Bytes, ExecutionResult, TxKind, B256, U256};
-use core_reth_primitives::sha3;
-
 
 use crate::{
     cache::db::StateProviderTraitObjWrapper, error::ToRpcError, EthApiError, RevertError,
@@ -77,7 +76,7 @@ where
         let txs_without_gas_limit = txs.iter().filter(|tx| tx.gas.is_none()).count();
 
         if total_specified_gas > block_gas_limit {
-            return Err(EthApiError::Other(Box::new(EthSimulateError::BlockGasLimitExceeded)))
+            return Err(EthApiError::Other(Box::new(EthSimulateError::BlockGasLimitExceeded)));
         }
 
         if txs_without_gas_limit > 0 {
@@ -133,7 +132,7 @@ where
         }
 
         let Ok(tx) = tx.clone().build_typed_tx() else {
-            return Err(EthApiError::TransactionConversionError)
+            return Err(EthApiError::TransactionConversionError);
         };
 
         // Create an empty signature for the transaction.

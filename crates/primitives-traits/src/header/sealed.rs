@@ -1,12 +1,12 @@
 use super::Header;
 use alloy_eips::BlockNumHash;
 use alloy_primitives::{BlockHash, Sealable};
-use core_reth_primitives::sha3;
 #[cfg(any(test, feature = "test-utils"))]
 use alloy_primitives::{BlockNumber, B256, U256};
 use alloy_rlp::{Decodable, Encodable};
 use bytes::BufMut;
 use core::mem;
+use core_reth_primitives::sha3;
 use derive_more::{AsRef, Deref};
 use reth_codecs::add_arbitrary_tests;
 use serde::{Deserialize, Serialize};

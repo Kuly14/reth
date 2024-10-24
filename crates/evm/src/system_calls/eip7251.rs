@@ -50,7 +50,7 @@ where
             return Err(BlockValidationError::ConsolidationRequestsContractCall {
                 message: format!("execution failed: {e}"),
             }
-            .into())
+            .into());
         }
     };
 

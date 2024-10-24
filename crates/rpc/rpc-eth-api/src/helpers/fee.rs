@@ -56,7 +56,7 @@ pub trait EthFees: LoadFee {
     ) -> impl Future<Output = Result<FeeHistory, Self::Error>> + Send {
         async move {
             if block_count == 0 {
-                return Ok(FeeHistory::default())
+                return Ok(FeeHistory::default());
             }
 
             // See https://github.com/ethereum/go-ethereum/blob/2754b197c935ee63101cbbca2752338246384fec/eth/gasprice/feehistory.go#L218C8-L225
@@ -100,7 +100,7 @@ pub trait EthFees: LoadFee {
             // Note: The types used ensure that the percentiles are never < 0
             if let Some(percentiles) = &reward_percentiles {
                 if percentiles.windows(2).any(|w| w[0] > w[1] || w[0] > 100.) {
-                    return Err(EthApiError::InvalidRewardPercentiles.into())
+                    return Err(EthApiError::InvalidRewardPercentiles.into());
                 }
             }
 
@@ -125,7 +125,7 @@ pub trait EthFees: LoadFee {
 
             if let Some(fee_entries) = fee_entries {
                 if fee_entries.len() != block_count as usize {
-                    return Err(EthApiError::InvalidBlockRange.into())
+                    return Err(EthApiError::InvalidBlockRange.into());
                 }
 
                 for entry in &fee_entries {
@@ -157,9 +157,8 @@ pub trait EthFees: LoadFee {
                     .sealed_headers_range(start_block..=end_block)
                     .map_err(Self::Error::from_eth_err)?;
                 if headers.len() != block_count as usize {
-                    return Err(EthApiError::InvalidBlockRange.into())
+                    return Err(EthApiError::InvalidBlockRange.into());
                 }
-
 
                 for header in &headers {
                     base_fee_per_gas.push(header.base_fee_per_gas.unwrap_or_default() as u128);
@@ -201,9 +200,9 @@ pub trait EthFees: LoadFee {
                         .chain_spec()
                         .base_fee_params_at_timestamp(last_header.timestamp)
                         .next_block_base_fee(
-                            last_header.gas_used ,
+                            last_header.gas_used,
                             last_header.gas_limit,
-                            last_header.base_fee_per_gas.unwrap_or_default() ,
+                            last_header.base_fee_per_gas.unwrap_or_default(),
                         ) as u128,
                 );
 

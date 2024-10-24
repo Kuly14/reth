@@ -195,7 +195,7 @@ where
             return Err(BlockchainTreeError::PendingBlockIsFinalized {
                 last_finalized: last_finalized_block,
             }
-            .into())
+            .into());
         }
 
         // is block inside chain
@@ -208,7 +208,7 @@ where
             return Ok(Some(BlockStatus::Disconnected {
                 head: self.state.block_indices.canonical_tip(),
                 missing_ancestor: block.parent_num_hash(),
-            }))
+            }));
         }
 
         Ok(None)
@@ -346,7 +346,7 @@ where
                     parent_block_number: canonical_parent_number,
                     block_number: block.number,
                 }
-                .into())
+                .into());
             }
         }
 
@@ -407,7 +407,7 @@ where
             return Err(BlockExecutionError::Validation(BlockValidationError::BlockPreMerge {
                 hash: block.hash(),
             })
-            .into())
+            .into());
         }
 
         let parent_header = provider
@@ -546,7 +546,7 @@ where
             } else {
                 // if there is no fork block that point to other chains, break the loop.
                 // it means that this fork joins to canonical block.
-                break
+                break;
             }
         }
         hashes
@@ -567,9 +567,9 @@ where
             // get fork block chain
             if let Some(fork_chain_id) = self.block_indices().get_side_chain_id(&fork.hash) {
                 chain_id = fork_chain_id;
-                continue
+                continue;
             }
-            break
+            break;
         }
         (self.block_indices().canonical_hash(&fork.number) == Some(fork.hash)).then_some(fork)
     }
@@ -986,7 +986,7 @@ where
         }
 
         if header.is_none() && self.sidechain_block_by_hash(*hash).is_some() {
-            return Ok(None)
+            return Ok(None);
         }
 
         if header.is_none() {
@@ -1049,7 +1049,7 @@ where
             {
                 return Err(CanonicalError::from(BlockValidationError::BlockPreMerge {
                     hash: block_hash,
-                }))
+                }));
             }
 
             let head = self.state.block_indices.canonical_tip();
@@ -1060,7 +1060,7 @@ where
             debug!(target: "blockchain_tree", ?block_hash, "Block hash not found in block indices");
             return Err(CanonicalError::from(BlockchainTreeError::BlockHashNotFoundInChain {
                 block_hash,
-            }))
+            }));
         };
 
         // we are splitting chain at the block hash that we want to make canonical
@@ -1068,7 +1068,7 @@ where
             debug!(target: "blockchain_tree", ?block_hash, ?chain_id, "Chain not present");
             return Err(CanonicalError::from(BlockchainTreeError::BlockSideChainIdConsistency {
                 chain_id: chain_id.into(),
-            }))
+            }));
         };
         trace!(target: "blockchain_tree", chain = ?canonical, "Found chain to make canonical");
         durations_recorder.record_relative(MakeCanonicalAction::SplitChain);
@@ -1098,7 +1098,7 @@ where
             debug!(target: "blockchain_tree", "No blocks in the chain to make canonical");
             return Err(CanonicalError::from(BlockchainTreeError::BlockHashNotFoundInChain {
                 block_hash: fork_block.hash,
-            }))
+            }));
         };
         trace!(target: "blockchain_tree", ?new_canon_chain, "Merging chains");
         let mut chain_appended = false;
@@ -1251,7 +1251,7 @@ where
                         block_number: tip.number,
                         block_hash: tip.hash(),
                     }))
-                    .into())
+                    .into());
                 }
                 self.metrics.trie_updates_insert_recomputed.increment(1);
                 trie_updates
@@ -1377,8 +1377,8 @@ mod tests {
     use alloy_consensus::{TxEip1559, EMPTY_ROOT_HASH};
     use alloy_genesis::{Genesis, GenesisAccount};
     use alloy_primitives::{Address, Sealable, B256};
-    use core_reth_primitives::sha3;
     use assert_matches::assert_matches;
+    use core_reth_primitives::sha3;
     use linked_hash_set::LinkedHashSet;
     use reth_chainspec::{ChainSpecBuilder, MAINNET, MIN_TRANSACTION_GAS};
     use reth_consensus::test_utils::TestConsensus;

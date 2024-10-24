@@ -471,10 +471,7 @@ mod tests {
         assert_eq!(hashed_state.storages.len(), 1);
 
         // Validate the account info.
-        assert_eq!(
-            *hashed_state.accounts.get(&sha3(address)).unwrap(),
-            Some(account_info.into())
-        );
+        assert_eq!(*hashed_state.accounts.get(&sha3(address)).unwrap(), Some(account_info.into()));
     }
 
     #[test]
@@ -510,10 +507,7 @@ mod tests {
         assert_eq!(hashed_state.storages.len(), 1);
 
         // Validate the account info.
-        assert_eq!(
-            *hashed_state.accounts.get(&sha3(address)).unwrap(),
-            Some(account_info.into())
-        );
+        assert_eq!(*hashed_state.accounts.get(&sha3(address)).unwrap(), Some(account_info.into()));
     }
 
     #[test]

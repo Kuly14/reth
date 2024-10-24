@@ -164,7 +164,7 @@ where
 
             if filter.block > best_number {
                 // no new blocks since the last poll
-                return Ok(FilterChanges::Empty)
+                return Ok(FilterChanges::Empty);
             }
 
             // update filter
@@ -232,7 +232,7 @@ where
                 *filter.clone()
             } else {
                 // Not a log filter
-                return Err(EthFilterError::FilterNotFound(id))
+                return Err(EthFilterError::FilterNotFound(id));
             }
         };
 
@@ -461,11 +461,11 @@ where
         trace!(target: "rpc::eth::filter", from=from_block, to=to_block, ?filter, "finding logs in range");
 
         if to_block < from_block {
-            return Err(EthFilterError::InvalidBlockRangeParams)
+            return Err(EthFilterError::InvalidBlockRangeParams);
         }
 
         if to_block - from_block > self.max_blocks_per_filter {
-            return Err(EthFilterError::QueryExceedsMaxBlocks(self.max_blocks_per_filter))
+            return Err(EthFilterError::QueryExceedsMaxBlocks(self.max_blocks_per_filter));
         }
 
         let mut all_logs = Vec::new();
@@ -519,7 +519,7 @@ where
                         if is_multi_block_range && all_logs.len() > self.max_logs_per_response {
                             return Err(EthFilterError::QueryExceedsMaxResults(
                                 self.max_logs_per_response,
-                            ))
+                            ));
                         }
                     }
                 }
@@ -697,7 +697,7 @@ impl Iterator for BlockRangeInclusiveIter {
         let start = self.iter.next()?;
         let end = (start + self.step).min(self.end);
         if start > end {
-            return None
+            return None;
         }
         Some((start, end))
     }

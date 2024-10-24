@@ -47,13 +47,13 @@ impl SparseStateTrie {
         // reveal root and initialize the trie if not already
         let Some((path, node)) = proof.next() else { return Ok(()) };
         if !path.is_empty() {
-            return Err(SparseStateTrieError::InvalidRootNode { path, node })
+            return Err(SparseStateTrieError::InvalidRootNode { path, node });
         }
 
         // Decode root node and perform sanity check.
         let root_node = TrieNode::decode(&mut &node[..])?;
         if matches!(root_node, TrieNode::EmptyRoot) && proof.peek().is_some() {
-            return Err(SparseStateTrieError::InvalidRootNode { path, node })
+            return Err(SparseStateTrieError::InvalidRootNode { path, node });
         }
 
         // Reveal root node if it wasn't already.

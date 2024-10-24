@@ -1,7 +1,7 @@
 use std::collections::hash_map;
 
 use crate::{DatabaseHashedCursorFactory, DatabaseTrieCursorFactory};
-use alloy_primitives::{ Address, BlockNumber, B256};
+use alloy_primitives::{Address, BlockNumber, B256};
 use core_reth_primitives::sha3;
 use reth_db::{cursor::DbCursorRO, models::BlockNumberAddress, tables, DatabaseError};
 use reth_db_api::transaction::DbTx;

@@ -3,8 +3,8 @@ use std::{collections::HashMap, fmt::Debug, fs::File, io::Write, path::PathBuf};
 use alloy_primitives::{B256, U256};
 
 use alloy_rpc_types_debug::ExecutionWitness;
-use eyre::OptionExt;
 use core_reth_primitives::sha3;
+use eyre::OptionExt;
 use pretty_assertions::Comparison;
 use reth_chainspec::{EthChainSpec, EthereumHardforks};
 use reth_engine_primitives::InvalidBlockHook;

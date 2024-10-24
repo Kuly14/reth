@@ -92,7 +92,7 @@ where
                 // and pushed to the front of the queue.
                 self.push_task(job);
 
-                return Poll::Ready(Some(job_result))
+                return Poll::Ready(Some(job_result));
             };
         }
 

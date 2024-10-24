@@ -12,7 +12,7 @@ use super::{EthApiError, EthResult};
 /// See [`Decodable2718::decode_2718`]
 pub fn recover_raw_transaction(data: Bytes) -> EthResult<PooledTransactionsElementEcRecovered> {
     if data.is_empty() {
-        return Err(EthApiError::EmptyRawTransactionData)
+        return Err(EthApiError::EmptyRawTransactionData);
     }
 
     let transaction = PooledTransactionsElement::decode_2718(&mut data.as_ref())

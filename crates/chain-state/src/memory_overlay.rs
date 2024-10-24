@@ -3,6 +3,7 @@ use alloy_primitives::{
     map::{HashMap, HashSet},
     Address, BlockNumber, Bytes, StorageKey, StorageValue, B256,
 };
+use core_reth_primitives::sha3;
 use reth_errors::ProviderResult;
 use reth_primitives::{Account, Bytecode};
 use reth_storage_api::{
@@ -13,9 +14,6 @@ use reth_trie::{
     updates::TrieUpdates, AccountProof, HashedPostState, HashedStorage, MultiProof, TrieInput,
 };
 use std::sync::OnceLock;
-use core_reth_primitives::sha3;
-
-
 
 /// A state provider that stores references to in-memory blocks along with their state as well as
 /// the historical state provider for fallback lookups.
@@ -63,7 +61,7 @@ impl BlockHashReader for MemoryOverlayStateProvider {
     fn block_hash(&self, number: BlockNumber) -> ProviderResult<Option<B256>> {
         for block in &self.in_memory {
             if block.block.number == number {
-                return Ok(Some(block.block.hash()))
+                return Ok(Some(block.block.hash()));
             }
         }
 
@@ -96,7 +94,7 @@ impl AccountReader for MemoryOverlayStateProvider {
     fn basic_account(&self, address: Address) -> ProviderResult<Option<Account>> {
         for block in &self.in_memory {
             if let Some(account) = block.execution_output.account(&address) {
-                return Ok(account)
+                return Ok(account);
             }
         }
 
@@ -136,8 +134,7 @@ impl StorageRootProvider for MemoryOverlayStateProvider {
     // TODO: Currently this does not reuse available in-memory trie nodes.
     fn storage_root(&self, address: Address, storage: HashedStorage) -> ProviderResult<B256> {
         let state = &self.trie_state().state;
-        let mut hashed_storage =
-            state.storages.get(&sha3(address)).cloned().unwrap_or_default();
+        let mut hashed_storage = state.storages.get(&sha3(address)).cloned().unwrap_or_default();
         hashed_storage.extend(&storage);
         self.historical.storage_root(address, hashed_storage)
     }
@@ -150,8 +147,7 @@ impl StorageRootProvider for MemoryOverlayStateProvider {
         storage: HashedStorage,
     ) -> ProviderResult<reth_trie::StorageProof> {
         let state = &self.trie_state().state;
-        let mut hashed_storage =
-            state.storages.get(&sha3(address)).cloned().unwrap_or_default();
+        let mut hashed_storage = state.storages.get(&sha3(address)).cloned().unwrap_or_default();
         hashed_storage.extend(&storage);
         self.historical.storage_proof(address, slot, hashed_storage)
     }
@@ -198,7 +194,7 @@ impl StateProvider for MemoryOverlayStateProvider {
     ) -> ProviderResult<Option<StorageValue>> {
         for block in &self.in_memory {
             if let Some(value) = block.execution_output.storage(&address, storage_key.into()) {
-                return Ok(Some(value))
+                return Ok(Some(value));
             }
         }
 
@@ -208,7 +204,7 @@ impl StateProvider for MemoryOverlayStateProvider {
     fn bytecode_by_hash(&self, code_hash: B256) -> ProviderResult<Option<Bytecode>> {
         for block in &self.in_memory {
             if let Some(contract) = block.execution_output.bytecode(&code_hash) {
-                return Ok(Some(contract))
+                return Ok(Some(contract));
             }
         }
 

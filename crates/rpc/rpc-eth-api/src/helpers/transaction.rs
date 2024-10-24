@@ -105,7 +105,7 @@ pub trait EthTransactions: LoadTransaction {
             if let Some(tx) =
                 self.pool().get_pooled_transaction_element(hash).map(|tx| tx.encoded_2718().into())
             {
-                return Ok(Some(tx))
+                return Ok(Some(tx));
             }
 
             self.spawn_blocking_io(move |ref this| {
@@ -212,7 +212,7 @@ pub trait EthTransactions: LoadTransaction {
                     return Ok(Some(from_recovered_with_block_context::<Self::TransactionCompat>(
                         tx.clone().with_signer(*signer),
                         tx_info,
-                    )))
+                    )));
                 }
             }
 
@@ -313,7 +313,7 @@ pub trait EthTransactions: LoadTransaction {
         async move {
             if let Some(block) = self.block_with_senders(block_id).await? {
                 if let Some(tx) = block.transactions().nth(index) {
-                    return Ok(Some(tx.encoded_2718().into()))
+                    return Ok(Some(tx.encoded_2718().into()));
                 }
             }
 
@@ -360,7 +360,7 @@ pub trait EthTransactions: LoadTransaction {
             };
 
             if self.find_signer(&from).is_err() {
-                return Err(SignError::NoAccount.into_eth_err())
+                return Err(SignError::NoAccount.into_eth_err());
             }
 
             // set nonce if not already set before
@@ -404,7 +404,7 @@ pub trait EthTransactions: LoadTransaction {
                     return match signer.sign_transaction(txn, from).await {
                         Ok(tx) => Ok(tx),
                         Err(e) => Err(e.into_eth_err()),
-                    }
+                    };
                 }
             }
             Err(EthApiError::InvalidTransactionSignature.into())

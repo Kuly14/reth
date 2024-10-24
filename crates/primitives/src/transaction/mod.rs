@@ -201,10 +201,10 @@ impl Transaction {
     pub fn set_chain_id(&mut self, chain_id: u64) {
         match self {
             Self::Legacy(TxLegacy { chain_id: ref mut c, .. }) => *c = Some(chain_id),
-            Self::Eip2930(TxEip2930 { chain_id: ref mut c, .. })
-            | Self::Eip1559(TxEip1559 { chain_id: ref mut c, .. })
-            | Self::Eip4844(TxEip4844 { chain_id: ref mut c, .. })
-            | Self::Eip7702(TxEip7702 { chain_id: ref mut c, .. }) => *c = chain_id,
+            Self::Eip2930(TxEip2930 { chain_id: ref mut c, .. }) |
+            Self::Eip1559(TxEip1559 { chain_id: ref mut c, .. }) |
+            Self::Eip4844(TxEip4844 { chain_id: ref mut c, .. }) |
+            Self::Eip7702(TxEip7702 { chain_id: ref mut c, .. }) => *c = chain_id,
             #[cfg(feature = "optimism")]
             Self::Deposit(_) => { /* noop */ }
         }
@@ -214,9 +214,9 @@ impl Transaction {
     /// [`TxKind::Create`] if the transaction is a contract creation.
     pub const fn kind(&self) -> TxKind {
         match self {
-            Self::Legacy(TxLegacy { to, .. })
-            | Self::Eip2930(TxEip2930 { to, .. })
-            | Self::Eip1559(TxEip1559 { to, .. }) => *to,
+            Self::Legacy(TxLegacy { to, .. }) |
+            Self::Eip2930(TxEip2930 { to, .. }) |
+            Self::Eip1559(TxEip1559 { to, .. }) => *to,
             Self::Eip4844(TxEip4844 { to, .. }) | Self::Eip7702(TxEip7702 { to, .. }) => {
                 TxKind::Call(*to)
             }
@@ -354,11 +354,11 @@ impl Transaction {
     /// Get the transaction's input field.
     pub const fn input(&self) -> &Bytes {
         match self {
-            Self::Legacy(TxLegacy { input, .. })
-            | Self::Eip2930(TxEip2930 { input, .. })
-            | Self::Eip1559(TxEip1559 { input, .. })
-            | Self::Eip4844(TxEip4844 { input, .. })
-            | Self::Eip7702(TxEip7702 { input, .. }) => input,
+            Self::Legacy(TxLegacy { input, .. }) |
+            Self::Eip2930(TxEip2930 { input, .. }) |
+            Self::Eip1559(TxEip1559 { input, .. }) |
+            Self::Eip4844(TxEip4844 { input, .. }) |
+            Self::Eip7702(TxEip7702 { input, .. }) => input,
             #[cfg(feature = "optimism")]
             Self::Deposit(TxDeposit { input, .. }) => input,
         }

@@ -3,8 +3,8 @@ use alloy_primitives::{
     map::{HashMap, HashSet},
     Address, B256,
 };
-use reth_db_api::transaction::DbTx;
 use core_reth_primitives::sha3;
+use reth_db_api::transaction::DbTx;
 use reth_execution_errors::StateProofError;
 use reth_trie::{
     hashed_cursor::HashedPostStateCursorFactory,

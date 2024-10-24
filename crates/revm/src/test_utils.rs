@@ -1,6 +1,5 @@
 use alloc::vec::Vec;
 use alloy_primitives::{
-
     map::{HashMap, HashSet},
     Address, BlockNumber, Bytes, StorageKey, B256, U256,
 };

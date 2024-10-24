@@ -138,7 +138,7 @@ impl Decodable for EnrForkIdEntry {
         let b = &mut &**buf;
         let rlp_head = Header::decode(b)?;
         if !rlp_head.list {
-            return Err(RlpError::UnexpectedString)
+            return Err(RlpError::UnexpectedString);
         }
         let started_len = b.len();
 
@@ -152,7 +152,7 @@ impl Decodable for EnrForkIdEntry {
             return Err(RlpError::ListLengthMismatch {
                 expected: rlp_head.payload_length,
                 got: consumed,
-            })
+            });
         }
 
         let rem = rlp_head.payload_length - consumed;
@@ -313,7 +313,7 @@ impl ForkFilter {
         if self.current().hash == fork_id.hash {
             if fork_id.next == 0 {
                 // 1b) No remotely announced fork, connect.
-                return Ok(())
+                return Ok(());
             }
 
             let is_incompatible = if self.head.number < TIMESTAMP_BEFORE_ETHEREUM_MAINNET {
@@ -344,7 +344,7 @@ impl ForkFilter {
             } else {
                 // 1b) Remotely announced fork not yet passed locally, connect.
                 Ok(())
-            }
+            };
         }
 
         // 2) If the remote FORK_HASH is a subset of the local past forks...
@@ -358,10 +358,10 @@ impl ForkFilter {
                         Ok(())
                     } else {
                         Err(ValidationError::RemoteStale { local: self.current(), remote: fork_id })
-                    }
+                    };
                 }
 
-                break
+                break;
             }
         }
 
@@ -369,7 +369,7 @@ impl ForkFilter {
         // with locally known future forks, connect.
         for future_fork_hash in &self.cache.future {
             if *future_fork_hash == fork_id.hash {
-                return Ok(())
+                return Ok(());
             }
         }
 

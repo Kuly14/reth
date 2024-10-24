@@ -644,9 +644,9 @@ impl StaticFileProvider {
         // If we detect an OVM import was done (block #1 <https://optimistic.etherscan.io/block/1>), skip it.
         // More on [#11099](https://github.com/paradigmxyz/reth/pull/11099).
         #[cfg(feature = "optimism")]
-        if reth_chainspec::EthChainSpec::chain(&provider.chain_spec())
-            == reth_chainspec::Chain::optimism_mainnet()
-            && provider
+        if reth_chainspec::EthChainSpec::chain(&provider.chain_spec()) ==
+            reth_chainspec::Chain::optimism_mainnet() &&
+            provider
                 .block_number(reth_optimism_primitives::bedrock::OVM_HEADER_1_HASH)?
                 .is_some()
         {
@@ -819,8 +819,8 @@ impl StaticFileProvider {
             // If there is a gap between the entry found in static file and
             // database, then we have most likely lost static file data and need to unwind so we can
             // load it again
-            if !(db_first_entry <= highest_static_file_entry
-                || highest_static_file_entry + 1 == db_first_entry)
+            if !(db_first_entry <= highest_static_file_entry ||
+                highest_static_file_entry + 1 == db_first_entry)
             {
                 info!(
                     target: "reth::providers::static_file",
@@ -1646,9 +1646,9 @@ impl WithdrawalsProvider for StaticFileProvider {
 impl StatsReader for StaticFileProvider {
     fn count_entries<T: Table>(&self) -> ProviderResult<usize> {
         match T::NAME {
-            tables::CanonicalHeaders::NAME
-            | tables::Headers::NAME
-            | tables::HeaderTerminalDifficulties::NAME => Ok(self
+            tables::CanonicalHeaders::NAME |
+            tables::Headers::NAME |
+            tables::HeaderTerminalDifficulties::NAME => Ok(self
                 .get_highest_static_file_block(StaticFileSegment::Headers)
                 .map(|block| block + 1)
                 .unwrap_or_default()

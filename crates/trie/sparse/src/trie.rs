@@ -1,7 +1,7 @@
 use crate::{SparseTrieError, SparseTrieResult};
 use alloy_primitives::{hex, map::HashMap, B256};
-use core_reth_primitives::sha3;
 use alloy_rlp::Decodable;
+use core_reth_primitives::sha3;
 use reth_tracing::tracing::debug;
 use reth_trie::{
     prefix_set::{PrefixSet, PrefixSetMut},
@@ -167,7 +167,7 @@ impl RevealedSparseTrie {
         if child.len() == B256::len_bytes() + 1 {
             // TODO: revise insert to not overwrite existing entries
             self.nodes.insert(path, SparseNode::Hash(B256::from_slice(&child[1..])));
-            return Ok(())
+            return Ok(());
         }
 
         self.reveal_node(path, TrieNode::decode(&mut &child[..])?)
@@ -179,7 +179,7 @@ impl RevealedSparseTrie {
         let existing = self.values.insert(path.clone(), value);
         if existing.is_some() {
             // trie structure unchanged, return immediately
-            return Ok(())
+            return Ok(());
         }
 
         let mut current = Nibbles::default();
@@ -187,7 +187,7 @@ impl RevealedSparseTrie {
             match node {
                 SparseNode::Empty => {
                     *node = SparseNode::new_leaf(path);
-                    break
+                    break;
                 }
                 SparseNode::Hash(hash) => {
                     return Err(SparseTrieError::BlindedNode { path: current, hash: *hash })
@@ -271,7 +271,7 @@ impl RevealedSparseTrie {
         let existing = self.values.remove(&path);
         if existing.is_none() {
             // trie structure unchanged, return immediately
-            return Ok(())
+            return Ok(());
         }
 
         let mut removed_nodes = self.take_nodes_for_path(&path)?;
@@ -291,7 +291,7 @@ impl RevealedSparseTrie {
             debug_assert!(self.nodes.is_empty());
             self.nodes.insert(Nibbles::default(), SparseNode::Empty);
 
-            return Ok(())
+            return Ok(());
         }
 
         // Walk the stack of removed nodes from the back and re-insert them back into the trie,
@@ -454,7 +454,7 @@ impl RevealedSparseTrie {
                         node,
                         unset_branch_nibble: None,
                     });
-                    break
+                    break;
                 }
                 SparseNode::Extension { key, .. } => {
                     #[cfg(debug_assertions)]
@@ -600,13 +600,13 @@ impl RevealedSparseTrie {
                         rlp_node
                     } else {
                         path_stack.extend([path, child_path]); // need to get rlp node for child first
-                        continue
+                        continue;
                     }
                 }
                 SparseNode::Branch { state_mask, hash } => {
                     if let Some(hash) = hash.filter(|_| !prefix_set.contains(&path)) {
                         rlp_node_stack.push((path, RlpNode::word_rlp(&hash)));
-                        continue
+                        continue;
                     }
 
                     branch_child_buf.clear();
@@ -627,7 +627,7 @@ impl RevealedSparseTrie {
                             debug_assert!(branch_value_stack_buf.is_empty());
                             path_stack.push(path);
                             path_stack.extend(branch_child_buf.drain(..));
-                            continue 'main
+                            continue 'main;
                         }
                     }
 
