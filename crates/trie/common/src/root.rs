@@ -1,9 +1,10 @@
 //! Common root computation functions.
 
 use crate::TrieAccount;
-use alloy_primitives::{keccak256, Address, B256, U256};
+use alloy_primitives::{Address, B256, U256};
 use alloy_rlp::Encodable;
 use alloy_trie::HashBuilder;
+use core_reth_primitives::sha3;
 use itertools::Itertools;
 use nybbles::Nibbles;
 
@@ -57,7 +58,7 @@ pub fn state_root_ref_unhashed<'a, A: Into<TrieAccount> + Clone + 'a>(
     state: impl IntoIterator<Item = (&'a Address, &'a A)>,
 ) -> B256 {
     state_root_unsorted(
-        state.into_iter().map(|(address, account)| (keccak256(address), account.clone())),
+        state.into_iter().map(|(address, account)| (sha3(address), account.clone())),
     )
 }
 
@@ -67,7 +68,7 @@ pub fn state_root_ref_unhashed<'a, A: Into<TrieAccount> + Clone + 'a>(
 pub fn state_root_unhashed<A: Into<TrieAccount>>(
     state: impl IntoIterator<Item = (Address, A)>,
 ) -> B256 {
-    state_root_unsorted(state.into_iter().map(|(address, account)| (keccak256(address), account)))
+    state_root_unsorted(state.into_iter().map(|(address, account)| (sha3(address), account)))
 }
 
 /// Sorts the hashed account keys and calculates the root hash of the state represented as MPT.
@@ -99,7 +100,7 @@ pub fn state_root<A: Into<TrieAccount>>(state: impl IntoIterator<Item = (B256, A
 /// Hashes storage keys, sorts them and them calculates the root hash of the storage trie.
 /// See [`storage_root_unsorted`] for more info.
 pub fn storage_root_unhashed(storage: impl IntoIterator<Item = (B256, U256)>) -> B256 {
-    storage_root_unsorted(storage.into_iter().map(|(slot, value)| (keccak256(slot), value)))
+    storage_root_unsorted(storage.into_iter().map(|(slot, value)| (sha3(slot), value)))
 }
 
 /// Sorts and calculates the root hash of account storage trie.

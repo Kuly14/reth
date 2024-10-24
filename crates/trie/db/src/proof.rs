@@ -1,10 +1,10 @@
 use crate::{DatabaseHashedCursorFactory, DatabaseTrieCursorFactory};
 use alloy_primitives::{
-    keccak256,
     map::{HashMap, HashSet},
     Address, B256,
 };
 use reth_db_api::transaction::DbTx;
+use core_reth_primitives::sha3;
 use reth_execution_errors::StateProofError;
 use reth_trie::{
     hashed_cursor::HashedPostStateCursorFactory,
@@ -112,7 +112,7 @@ impl<'a, TX: DbTx> DatabaseStorageProof<'a, TX>
         slot: B256,
         storage: HashedStorage,
     ) -> Result<reth_trie_common::StorageProof, StateProofError> {
-        let hashed_address = keccak256(address);
+        let hashed_address = sha3(address);
         let prefix_set = storage.construct_prefix_set();
         let state_sorted = HashedPostStateSorted::new(
             Default::default(),

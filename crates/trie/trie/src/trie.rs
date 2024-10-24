@@ -10,8 +10,9 @@ use crate::{
     HashBuilder, Nibbles, TrieAccount,
 };
 use alloy_consensus::EMPTY_ROOT_HASH;
-use alloy_primitives::{keccak256, Address, B256};
+use alloy_primitives::{Address, B256};
 use alloy_rlp::{BufMut, Encodable};
+use core_reth_primitives::sha3;
 use reth_execution_errors::{StateRootError, StorageRootError};
 use tracing::trace;
 
@@ -231,9 +232,9 @@ where
                     hash_builder.add_leaf(Nibbles::unpack(hashed_address), &account_rlp);
 
                     // Decide if we need to return intermediate progress.
-                    let total_updates_len = updated_storage_nodes +
-                        account_node_iter.walker.removed_keys_len() +
-                        hash_builder.updates_len();
+                    let total_updates_len = updated_storage_nodes
+                        + account_node_iter.walker.removed_keys_len()
+                        + hash_builder.updates_len();
                     if retain_updates && total_updates_len as u64 >= self.threshold {
                         let (walker_stack, walker_deleted_keys) = account_node_iter.walker.split();
                         trie_updates.removed_nodes.extend(walker_deleted_keys);
@@ -250,7 +251,7 @@ where
                             Box::new(state),
                             hashed_entries_walked,
                             trie_updates,
-                        ))
+                        ));
                     }
                 }
             }
@@ -309,7 +310,7 @@ impl<T, H> StorageRoot<T, H> {
         Self::new_hashed(
             trie_cursor_factory,
             hashed_cursor_factory,
-            keccak256(address),
+            sha3(address),
             #[cfg(feature = "metrics")]
             metrics,
         )
@@ -404,7 +405,7 @@ where
 
         // short circuit on empty storage
         if hashed_storage_cursor.is_storage_empty()? {
-            return Ok((EMPTY_ROOT_HASH, 0, StorageTrieUpdates::deleted()))
+            return Ok((EMPTY_ROOT_HASH, 0, StorageTrieUpdates::deleted()));
         }
 
         let mut tracker = TrieTracker::default();

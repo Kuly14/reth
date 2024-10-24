@@ -30,11 +30,11 @@
 - [x] rpc
 - [x] stages
 - [x] static-file
-- [ ] storage
-- [ ] tasks
-- [ ] tokio-util
-- [ ] tracing
-- [ ] transaction-pool
+- [x] storage
+- [x] tasks
+- [x] tokio-util
+- [x] tracing
+- [x] transaction-pool
 - [ ] trie
 
 Other Todo:

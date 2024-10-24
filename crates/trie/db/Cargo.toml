@@ -12,6 +12,9 @@ description = "Database integration with merkle trie implementation"
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 # reth
 reth-primitives.workspace = true
 reth-execution-errors.workspace = true

@@ -1,8 +1,9 @@
 #![allow(missing_docs)]
 
 use alloy_consensus::EMPTY_ROOT_HASH;
-use alloy_primitives::{keccak256, Address, Bytes, B256, U256};
+use alloy_primitives::{Address, Bytes, B256, U256};
 use alloy_rlp::EMPTY_STRING_CODE;
+use core_reth_primitives::sha3;
 use reth_chainspec::{Chain, ChainSpec, HOLESKY, MAINNET};
 use reth_primitives::Account;
 use reth_provider::test_utils::{create_test_provider_factory, insert_genesis};
@@ -129,7 +130,7 @@ fn mainnet_genesis_account_proof() {
     let root = insert_genesis(&factory, MAINNET.clone()).unwrap();
 
     // Address from mainnet genesis allocation.
-    // keccak256 - `0xcf67b71c90b0d523dd5004cf206f325748da347685071b34812e21801f5270c4`
+    // sha3 - `0xcf67b71c90b0d523dd5004cf206f325748da347685071b34812e21801f5270c4`
     let target = Address::from_str("0x000d836201318ec6899a67540690382780743280").unwrap();
 
     // `cast proof 0x000d836201318ec6899a67540690382780743280 --block 0`
@@ -154,7 +155,7 @@ fn mainnet_genesis_account_proof_nonexistent() {
     let root = insert_genesis(&factory, MAINNET.clone()).unwrap();
 
     // Address that does not exist in mainnet genesis allocation.
-    // keccak256 - `0x18f415ffd7f66bb1924d90f0e82fb79ca8c6d8a3473cd9a95446a443b9db1761`
+    // sha3 - `0x18f415ffd7f66bb1924d90f0e82fb79ca8c6d8a3473cd9a95446a443b9db1761`
     let target = Address::from_str("0x000d836201318ec6899a67540690382780743281").unwrap();
 
     // `cast proof 0x000d836201318ec6899a67540690382780743281 --block 0`
@@ -210,7 +211,7 @@ fn holesky_deposit_contract_proof() {
         storage_proofs: Vec::from([
             StorageProof {
                 key: slot_22,
-                nibbles: Nibbles::unpack(keccak256(slot_22)),
+                nibbles: Nibbles::unpack(sha3(slot_22)),
                 value: U256::from_str("0xf5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b").unwrap(),
                 proof: convert_to_proof([
                     "0xf9019180a0aafd5b14a6edacd149e110ba6776a654f2dbffca340902be933d011113f2750380a0a502c93b1918c4c6534d4593ae03a5a23fa10ebc30ffb7080b297bff2446e42da02eb2bf45fd443bd1df8b6f9c09726a4c6252a0f7896a131a081e39a7f644b38980a0a9cf7f673a0bce76fd40332afe8601542910b48dea44e93933a3e5e930da5d19a0ddf79db0a36d0c8134ba143bcb541cd4795a9a2bae8aca0ba24b8d8963c2a77da0b973ec0f48f710bf79f63688485755cbe87f9d4c68326bb83c26af620802a80ea0f0855349af6bf84afc8bca2eda31c8ef8c5139be1929eeb3da4ba6b68a818cb0a0c271e189aeeb1db5d59d7fe87d7d6327bbe7cfa389619016459196497de3ccdea0e7503ba5799e77aa31bbe1310c312ca17b2c5bcc8fa38f266675e8f154c2516ba09278b846696d37213ab9d20a5eb42b03db3173ce490a2ef3b2f3b3600579fc63a0e9041059114f9c910adeca12dbba1fef79b2e2c8899f2d7213cd22dfe4310561a047c59da56bb2bf348c9dd2a2e8f5538a92b904b661cfe54a4298b85868bbe4858080",
@@ -220,7 +221,7 @@ fn holesky_deposit_contract_proof() {
             },
             StorageProof {
                 key: slot_23,
-                nibbles: Nibbles::unpack(keccak256(slot_23)),
+                nibbles: Nibbles::unpack(sha3(slot_23)),
                 value: U256::from_str("0xdb56114e00fdd4c1f85c892bf35ac9a89289aaecb1ebd0a96cde606a748b5d71").unwrap(),
                 proof: convert_to_proof([
                     "0xf9019180a0aafd5b14a6edacd149e110ba6776a654f2dbffca340902be933d011113f2750380a0a502c93b1918c4c6534d4593ae03a5a23fa10ebc30ffb7080b297bff2446e42da02eb2bf45fd443bd1df8b6f9c09726a4c6252a0f7896a131a081e39a7f644b38980a0a9cf7f673a0bce76fd40332afe8601542910b48dea44e93933a3e5e930da5d19a0ddf79db0a36d0c8134ba143bcb541cd4795a9a2bae8aca0ba24b8d8963c2a77da0b973ec0f48f710bf79f63688485755cbe87f9d4c68326bb83c26af620802a80ea0f0855349af6bf84afc8bca2eda31c8ef8c5139be1929eeb3da4ba6b68a818cb0a0c271e189aeeb1db5d59d7fe87d7d6327bbe7cfa389619016459196497de3ccdea0e7503ba5799e77aa31bbe1310c312ca17b2c5bcc8fa38f266675e8f154c2516ba09278b846696d37213ab9d20a5eb42b03db3173ce490a2ef3b2f3b3600579fc63a0e9041059114f9c910adeca12dbba1fef79b2e2c8899f2d7213cd22dfe4310561a047c59da56bb2bf348c9dd2a2e8f5538a92b904b661cfe54a4298b85868bbe4858080",
@@ -230,7 +231,7 @@ fn holesky_deposit_contract_proof() {
             },
             StorageProof {
                 key: slot_24,
-                nibbles: Nibbles::unpack(keccak256(slot_24)),
+                nibbles: Nibbles::unpack(sha3(slot_24)),
                 value: U256::from_str("0xc78009fdf07fc56a11f122370658a353aaa542ed63e44c4bc15ff4cd105ab33c").unwrap(),
                 proof: convert_to_proof([
                     "0xf9019180a0aafd5b14a6edacd149e110ba6776a654f2dbffca340902be933d011113f2750380a0a502c93b1918c4c6534d4593ae03a5a23fa10ebc30ffb7080b297bff2446e42da02eb2bf45fd443bd1df8b6f9c09726a4c6252a0f7896a131a081e39a7f644b38980a0a9cf7f673a0bce76fd40332afe8601542910b48dea44e93933a3e5e930da5d19a0ddf79db0a36d0c8134ba143bcb541cd4795a9a2bae8aca0ba24b8d8963c2a77da0b973ec0f48f710bf79f63688485755cbe87f9d4c68326bb83c26af620802a80ea0f0855349af6bf84afc8bca2eda31c8ef8c5139be1929eeb3da4ba6b68a818cb0a0c271e189aeeb1db5d59d7fe87d7d6327bbe7cfa389619016459196497de3ccdea0e7503ba5799e77aa31bbe1310c312ca17b2c5bcc8fa38f266675e8f154c2516ba09278b846696d37213ab9d20a5eb42b03db3173ce490a2ef3b2f3b3600579fc63a0e9041059114f9c910adeca12dbba1fef79b2e2c8899f2d7213cd22dfe4310561a047c59da56bb2bf348c9dd2a2e8f5538a92b904b661cfe54a4298b85868bbe4858080",
@@ -240,7 +241,7 @@ fn holesky_deposit_contract_proof() {
             },
             StorageProof {
                 key: slot_100,
-                nibbles: Nibbles::unpack(keccak256(slot_100)),
+                nibbles: Nibbles::unpack(sha3(slot_100)),
                 value: U256::ZERO,
                 proof: convert_to_proof([
                     "0xf9019180a0aafd5b14a6edacd149e110ba6776a654f2dbffca340902be933d011113f2750380a0a502c93b1918c4c6534d4593ae03a5a23fa10ebc30ffb7080b297bff2446e42da02eb2bf45fd443bd1df8b6f9c09726a4c6252a0f7896a131a081e39a7f644b38980a0a9cf7f673a0bce76fd40332afe8601542910b48dea44e93933a3e5e930da5d19a0ddf79db0a36d0c8134ba143bcb541cd4795a9a2bae8aca0ba24b8d8963c2a77da0b973ec0f48f710bf79f63688485755cbe87f9d4c68326bb83c26af620802a80ea0f0855349af6bf84afc8bca2eda31c8ef8c5139be1929eeb3da4ba6b68a818cb0a0c271e189aeeb1db5d59d7fe87d7d6327bbe7cfa389619016459196497de3ccdea0e7503ba5799e77aa31bbe1310c312ca17b2c5bcc8fa38f266675e8f154c2516ba09278b846696d37213ab9d20a5eb42b03db3173ce490a2ef3b2f3b3600579fc63a0e9041059114f9c910adeca12dbba1fef79b2e2c8899f2d7213cd22dfe4310561a047c59da56bb2bf348c9dd2a2e8f5538a92b904b661cfe54a4298b85868bbe4858080",

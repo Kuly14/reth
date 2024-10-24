@@ -1,5 +1,6 @@
 use crate::{SparseTrieError, SparseTrieResult};
-use alloy_primitives::{hex, keccak256, map::HashMap, B256};
+use alloy_primitives::{hex, map::HashMap, B256};
+use core_reth_primitives::sha3;
 use alloy_rlp::Decodable;
 use reth_tracing::tracing::debug;
 use reth_trie::{
@@ -514,7 +515,7 @@ impl RevealedSparseTrie {
         if let Some(root_hash) = root_rlp.as_hash() {
             root_hash
         } else {
-            keccak256(root_rlp)
+            sha3(root_rlp)
         }
     }
 

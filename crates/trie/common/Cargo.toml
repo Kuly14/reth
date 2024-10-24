@@ -12,6 +12,9 @@ description = "Commonly used types for trie usage in reth."
 workspace = true
 
 [dependencies]
+# core
+core-reth-primitives.workspace = true
+
 reth-primitives-traits.workspace = true
 reth-codecs.workspace = true
 

@@ -7,11 +7,11 @@ use crate::{
     HashBuilder, Nibbles,
 };
 use alloy_primitives::{
-    keccak256,
     map::{HashMap, HashSet},
     Address, B256,
 };
 use alloy_rlp::{BufMut, Encodable};
+use core_reth_primitives::sha3;
 use reth_execution_errors::trie::StateProofError;
 use reth_trie_common::{
     proof::ProofRetainer, AccountProof, MultiProof, StorageMultiProof, TrieAccount,
@@ -79,10 +79,7 @@ where
         slots: &[B256],
     ) -> Result<AccountProof, StateProofError> {
         Ok(self
-            .multiproof(HashMap::from_iter([(
-                keccak256(address),
-                slots.iter().map(keccak256).collect(),
-            )]))?
+            .multiproof(HashMap::from_iter([(sha3(address), slots.iter().map(sha3).collect())]))?
             .account_proof(address, slots)?)
     }
 
@@ -157,7 +154,7 @@ pub struct StorageProof<T, H> {
 impl<T, H> StorageProof<T, H> {
     /// Create a new [`StorageProof`] instance.
     pub fn new(t: T, h: H, address: Address) -> Self {
-        Self::new_hashed(t, h, keccak256(address))
+        Self::new_hashed(t, h, sha3(address))
     }
 
     /// Create a new [`StorageProof`] instance with hashed address.
@@ -207,7 +204,7 @@ where
         self,
         slot: B256,
     ) -> Result<reth_trie_common::StorageProof, StateProofError> {
-        let targets = HashSet::from_iter([keccak256(slot)]);
+        let targets = HashSet::from_iter([sha3(slot)]);
         Ok(self.storage_multiproof(targets)?.storage_proof(slot)?)
     }
 
@@ -221,7 +218,7 @@ where
 
         // short circuit on empty storage
         if hashed_storage_cursor.is_storage_empty()? {
-            return Ok(StorageMultiProof::empty())
+            return Ok(StorageMultiProof::empty());
         }
 
         let target_nibbles = targets.into_iter().map(Nibbles::unpack).collect::<Vec<_>>();

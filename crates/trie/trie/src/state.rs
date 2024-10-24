@@ -2,7 +2,8 @@ use crate::{
     prefix_set::{PrefixSetMut, TriePrefixSetsMut},
     Nibbles,
 };
-use alloy_primitives::{keccak256, Address, B256, U256};
+use alloy_primitives::{Address, B256, U256};
+use core_reth_primitives::sha3;
 use itertools::Itertools;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use reth_primitives::Account;
@@ -31,7 +32,7 @@ impl HashedPostState {
         let hashed = state
             .into_par_iter()
             .map(|(address, account)| {
-                let hashed_address = keccak256(address);
+                let hashed_address = sha3(address);
                 let hashed_account = account.info.clone().map(Into::into);
                 let hashed_storage = HashedStorage::from_plain_storage(
                     account.status,
@@ -58,7 +59,7 @@ impl HashedPostState {
         let hashed = state
             .into_par_iter()
             .map(|(address, account)| {
-                let hashed_address = keccak256(address);
+                let hashed_address = sha3(address);
                 let hashed_account = account.account.as_ref().map(|a| a.info.clone().into());
                 let hashed_storage = HashedStorage::from_plain_storage(
                     account.status,
@@ -225,7 +226,7 @@ impl HashedStorage {
     ) -> Self {
         Self::from_iter(
             status.was_destroyed(),
-            storage.into_iter().map(|(key, value)| (keccak256(B256::from(*key)), *value)),
+            storage.into_iter().map(|(key, value)| (sha3(B256::from(*key)), *value)),
         )
     }
 
@@ -471,7 +472,7 @@ mod tests {
 
         // Validate the account info.
         assert_eq!(
-            *hashed_state.accounts.get(&keccak256(address)).unwrap(),
+            *hashed_state.accounts.get(&sha3(address)).unwrap(),
             Some(account_info.into())
         );
     }
@@ -510,7 +511,7 @@ mod tests {
 
         // Validate the account info.
         assert_eq!(
-            *hashed_state.accounts.get(&keccak256(address)).unwrap(),
+            *hashed_state.accounts.get(&sha3(address)).unwrap(),
             Some(account_info.into())
         );
     }
@@ -529,16 +530,16 @@ mod tests {
         };
 
         // Create hashed accounts with addresses.
-        let account_1 = (keccak256(address_1), Some(account_info_1.into()));
-        let account_2 = (keccak256(address_2), None);
+        let account_1 = (sha3(address_1), Some(account_info_1.into()));
+        let account_2 = (sha3(address_2), None);
 
         // Add accounts to the hashed post state.
         let hashed_state = HashedPostState::default().with_accounts(vec![account_1, account_2]);
 
         // Validate the hashed post state.
         assert_eq!(hashed_state.accounts.len(), 2);
-        assert!(hashed_state.accounts.contains_key(&keccak256(address_1)));
-        assert!(hashed_state.accounts.contains_key(&keccak256(address_2)));
+        assert!(hashed_state.accounts.contains_key(&sha3(address_1)));
+        assert!(hashed_state.accounts.contains_key(&sha3(address_2)));
     }
 
     #[test]
@@ -547,16 +548,16 @@ mod tests {
         let address_1 = Address::random();
         let address_2 = Address::random();
 
-        let storage_1 = (keccak256(address_1), HashedStorage::new(false));
-        let storage_2 = (keccak256(address_2), HashedStorage::new(true));
+        let storage_1 = (sha3(address_1), HashedStorage::new(false));
+        let storage_2 = (sha3(address_2), HashedStorage::new(true));
 
         // Add storages to the hashed post state.
         let hashed_state = HashedPostState::default().with_storages(vec![storage_1, storage_2]);
 
         // Validate the hashed post state.
         assert_eq!(hashed_state.storages.len(), 2);
-        assert!(hashed_state.storages.contains_key(&keccak256(address_1)));
-        assert!(hashed_state.storages.contains_key(&keccak256(address_2)));
+        assert!(hashed_state.storages.contains_key(&sha3(address_1)));
+        assert!(hashed_state.storages.contains_key(&sha3(address_2)));
     }
 
     #[test]
@@ -567,7 +568,7 @@ mod tests {
 
         // Add an account and validate the state is no longer empty.
         let non_empty_state = HashedPostState::default()
-            .with_accounts(vec![(keccak256(Address::random()), Some(Account::default()))]);
+            .with_accounts(vec![(sha3(Address::random()), Some(Account::default()))]);
         assert!(!non_empty_state.is_empty());
     }
 }

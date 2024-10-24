@@ -1,5 +1,6 @@
 #![allow(missing_docs, unreachable_pub)]
-use alloy_primitives::{keccak256, map::HashMap, Address, B256, U256};
+use alloy_primitives::{map::HashMap, Address, B256, U256};
+use core_reth_primitives::sha3;
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use proptest::{prelude::*, strategy::ValueTree, test_runner::TestRunner};
 use reth_trie::{HashedPostState, HashedStorage};
@@ -28,7 +29,7 @@ fn from_bundle_state_seq(state: &HashMap<Address, BundleAccount>) -> HashedPostS
     let mut this = HashedPostState::default();
 
     for (address, account) in state {
-        let hashed_address = keccak256(address);
+        let hashed_address = sha3(address);
         this.accounts.insert(hashed_address, account.info.clone().map(Into::into));
 
         let hashed_storage = HashedStorage::from_iter(
@@ -36,7 +37,7 @@ fn from_bundle_state_seq(state: &HashMap<Address, BundleAccount>) -> HashedPostS
             account
                 .storage
                 .iter()
-                .map(|(key, value)| (keccak256(B256::new(key.to_be_bytes())), value.present_value)),
+                .map(|(key, value)| (sha3(B256::new(key.to_be_bytes())), value.present_value)),
         );
         this.storages.insert(hashed_address, hashed_storage);
     }
